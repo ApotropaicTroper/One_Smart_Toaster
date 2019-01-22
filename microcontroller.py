@@ -98,7 +98,8 @@ class CookTimer(object):
 class CookInstruction(object):
 	''' Manage access to cooking instruction, and carry it out '''
 	
-	data = None
+	cook_time = 0
+	cook_temp = 0
 	mutexes = None
 	timer = None
 	confirmed = None
@@ -106,32 +107,33 @@ class CookInstruction(object):
 
 	def __init__(self, cook_time=0, cook_temp=0)
 		self.timer = CookTimer()
-		self.data = [cook_time, cook_temp]
+		self.cook_time = cook_time
+		self.cook_temp = cook_temp
 		self.stop = thread.Event()
 		self.confirmed = thread.Event() # what is the initial state of a threading.Event object?
-		self.mutexes = [thread.Lock(), thread.Lock()]
+		self.mutexes = [thread.Lock(), thread.Lock()] # might want to split so no list is created
 	
 	def write_time(value):
 		if value < 0:
 			''' Report time error '''
 			return
 		with mutexes[0]:
-			data[0] = value
+			self.cook_time = value
 	
 	def write_temperature(value):
 		if value < 0:
 			''' Report temperature error '''
 			return
 		with mutexes[1]:
-			data[1] = value
+			self.cook_temp = value
 	
 	def read_time():
 		with mutexes[0]:
-			return data[0]
+			return self.cook_time
 	
 	def read_temperature():
 		with mutexes[1]:
-			return data[1]
+			return self.cook_temp
 	
 	def confirm():
 		self.confirmed.set()
@@ -159,7 +161,7 @@ class CookInstruction(object):
 			# 	alter something
 			...
 		self.clear()
-	
+
 
 
 
@@ -192,21 +194,11 @@ if __name__ == '__main__':
 	listener.start()
 	execute_0 = thread.Thread(target=execute, name='executor_0', args=instruction[0])
 	execute_1 = thread.Thread(target=execute, name='executor_1', args=instruction[1])
-	listener.run()
-	execute_0.run()
-	execute_1.run()
+	execute_0.start()
+	execute_1.start()
 	listener.join()
 	execute_0.join()
 	execute_1.join()
-
-
-
-
-
-
-
-
-
 
 
 
