@@ -58,74 +58,94 @@ import time
 import threading as thread
 
 class CookTimer(object):
+	''' countdown timer '''
 
 	cook_time = 0
 	start_time = 0
+	running = False
 
 	def __init__(self):
 		self.clear()
-	
+
+	@property
+	def remaining_time(self):
+		''' If the timer is counting down, how much time is left? '''
+		if not self.running:
+			return 0
+		return self.cook_time - self.elapsed_time
+	@property
+	def elapsed_time(self):
+		''' If the timer is counting down, how long has it been running? '''
+		if not self.running:
+			return 0
+		return time.time() - self.start_time
+	@property
+	def finished(self):
+		''' Has the timer reached 0? '''
+		if not self.running:
+			return True
+		return self.remaining_time >= 0
+
 	def set(self, cook_time):
-		''' set how long the timer should run for '''
+		''' Set how long the timer should run for '''
 		self.clear()
 		self.cook_time = cook_time
 	
 	def start(self):
 		self.start_time = time.time()
-
-	def finished(self):
-		''' Is the timer still going? '''
-		elapsed_time = time.time() - self.start_time
-		# returns true if timer hasn't been started, unless system clock changed
-		return self.elapsed_time > self.cook_time
+		self.running = True
 	
 	def clear(self):
 		self.cook_time = 0
 		self.start_time = 0
+		self.running = False
 
 
-class CookInstruction(object):
-	''' Manage access to cooking instruction, and carry it out '''
+class CookInstructions(object):
+	''' Manage access to cooking instructions '''
 	
-	cook_time, cook_temp = 0,0
+	_cook_time, _cook_temp = 0,0
 	time_mutex, temp_mutex = None,None
-	timer = None
 	confirmed, stop = None, None
 
 	def __init__(self, cook_time=0, cook_temp=0):
-		self.timer = CookTimer()
+		self.mutex_time = thread.Lock()
+		self.mutex_temp = thread.Lock()
+
 		self.cook_time = cook_time
 		self.cook_temp = cook_temp
 		self.stop = thread.Event()
 		self.confirmed = thread.Event() # what is the initial state of a threading.Event object?
-		self.mutex_time = thread.Lock()
-		self.mutex_temp = thread.Lock()
-	
-	def write_time(self, value):
+
+	@property
+	def cook_time(self):
+		''' Read access for cooking time '''
+		with self.mutex_time:
+			return self._cook_time
+	@cook_time.setter
+	def cook_time(self, value):
 		''' Write access for cooking time '''
 		if value < 0:
 			''' Report time error '''
 			...
 			return
 		with self.mutex_time:
-			self.cook_time = value
-	
-	def write_temperature(self, value):
+			self._cook_time = value
+
+	@property
+	def cook_temp(self):
+		''' Read access for cooking temperature '''
+		with self.mutex_temp:
+			return self._cook_temp
+	@cook_temp.setter
+	def cook_temp(self,value):
 		''' Write access for cooking temperature '''
 		if value < 0:
 			''' Report temperature error '''
 			...
 			return
 		with self.mutex_temp:
-			self.cook_temp = value
-	
-	def read_time(self):
-		with self.mutex_time:
-			return self.cook_time
-	
-	def read_temperature(self):
-		with self.mutex_temp:
-			return self.cook_temp
+			self._cook_temp = value
 	
 	def confirm(self):
 		self.confirmed.set()
@@ -135,27 +155,59 @@ class CookInstruction(object):
 		self.confirmed.clear()
 	
 	def clear(self):
-		self.write_time(0)
-		self.write_temperature(0)
+		self.cook_time = 0
+		self.cook_temperature = 0
 		self.confirmed.clear()
 		self.stop.clear()
-		self.timer.clear()
+
+
+class ToasterController(object):
+
+	loaded = False
+	instructions = None
+	timer = None
+
+	def __init__(self, instructions):
+		self.timer = CookTimer()
+		self.instructions = instructions
+
+	def start(self):
+		self.lower_platform()
+		self.set_heating_element()
+		self.timer.set(instructions.cook_time)
+		self.timer.start()
 
 	def execute(self):
-		# lower platform
-		# set stuff about temperature
-		self.timer.set(self.read_time)
-		self.timer.start()
-		while not self.timer.finished:
-			# check timer
-			# 	if timer has finished, stop cooking
-			# check temperature
-			# 	alter something
+		'''
+		Have the instructions been confirmed?
+		If so,:
+			lower platform
+			set temperature
+			set timer
+			loop:
+				run until timer finishes or abort signal receives
+				has timer finished?
+				has abort signal been received?
+			clear temperature
+			clear timer
+			raise platform
+
+		'''		
+		self.instructions.confirmed.wait()
+		while True:
 			...
-		# raise platform
-		self.clear()
+		...
 
 
+
+	def lower_platform(self):
+		...
+	def raise_platform(self):
+		...
+	def set_heating_element(self):
+		...
+	def get_heating_element(self):
+		...
 
 
 def listen(instructions):
@@ -163,31 +215,29 @@ def listen(instructions):
 	''' For the time being, let's say this is where it gets messages.
 		For testing purposes, I'll substitute with input() '''
 	while True:
-		time = int(input('Time (sec)\n> '))
-		temperature = int(input('Temperature (°F)\n> '))
-		slot = int(input('Slot? 0/1\n> '))
-		assert slot == 0 or slot == 1, 'Slot doesn\'t exist'
-		instructions[slot].write_time(time)
-		instructions[slot].write_temperature(temperature)
-		if input('Confirm? > '):
-			instructions[slot].confirm()
+		...
+		# time = int(input('Time (sec)\n> '))
+		# temperature = int(input('Temperature (°F)\n> '))
+		# instructions.write_time(time)
+		# instructions.write_temperature(temperature)
+		# if input('Confirm? > '):
+		# 	instructions.confirm()
 
-def execute(instruction):
+def execute(instructions):
 	''' this thread carries out instructions received from the app '''
 	while True:
-		instruction.confirmed.wait()
-		instruction.execute()
+		...
+		# instructions.confirmed.wait()
+		# instructions.execute()
 
 if __name__ == '__main__':
 	# one instruction structure for each toaster slot
-	instructions = [CookInstruction(), CookInstruction()]
+	instructions = CookInstructions()
+	controller = ToasterController(instructions)
 	# this thread will listen for messages from the app
 	listener = thread.Thread(target=listen, name='listener', args=(instructions,), daemon=True)
 	listener.start()
-	execute_0 = thread.Thread(target=execute, name='executor_0', args=(instructions[0],))
-	execute_1 = thread.Thread(target=execute, name='executor_1', args=(instructions[1],))
-	execute_0.start()
-	execute_1.start()
+	execute = thread.Thread(target=execute, name='executor', args=(instructions,))
+	execute.start()
 	listener.join()
-	execute_0.join()
-	execute_1.join()
+	execute.join()
