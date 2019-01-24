@@ -84,7 +84,7 @@ class CookTimer(object):
 		''' Has the timer reached 0? '''
 		if not self.running:
 			return True
-		return self.remaining_time >= 0
+		return self.remaining_time >= 0 # returns true if remaining time is exactly 0
 
 	def set(self, cook_time):
 		''' Set how long the timer should run for '''
@@ -194,11 +194,20 @@ class ToasterController(object):
 
 		'''		
 		self.instructions.confirmed.wait()
+		self.start()
 		while True:
+
+
 			...
 		...
 
-
+	# this method needs a better name
+	def react_while_cooking(self):
+		''' Should the execute thread do something during cooking?
+			In other words, is there a condition the controller should react to?
+		'''
+		if self.timer.finished:
+			return True
 
 	def lower_platform(self):
 		...
