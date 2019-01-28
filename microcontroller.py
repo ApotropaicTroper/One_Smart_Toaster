@@ -86,6 +86,12 @@ class CookTimer(object):
 			return True
 		return self.remaining_time >= 0 # returns true if remaining time is exactly 0
 
+	def to_string(self):
+		''' return how much time is left as a tuple of minutes and seconds '''
+		if not self.running:
+			return (0,0)
+		return divmod(self.remaining_time, 60)
+
 	def set(self, cook_time):
 		''' Set how long the timer should run for '''
 		self.clear()
@@ -101,12 +107,13 @@ class CookTimer(object):
 		self.running = False
 
 
+
 class CookInstructions(object):
 	''' Manage access to cooking instructions '''
 	
 	_cook_time, _cook_temp = 0,0
-	time_mutex, temp_mutex = None,None
-	confirmed, stop = None, None
+	mutex_time, mutex_temp = None,None
+	confirmed, stopped = None, None
 
 	def __init__(self, cook_time=0, cook_temp=0):
 		self.mutex_time = thread.Lock()
@@ -114,7 +121,7 @@ class CookInstructions(object):
 
 		self.cook_time = cook_time
 		self.cook_temp = cook_temp
-		self.stop = thread.Event()
+		self.stoppped = thread.Event()
 		self.confirmed = thread.Event() # what is the initial state of a threading.Event object?
 
 	@property
@@ -150,15 +157,15 @@ class CookInstructions(object):
 	def confirm(self):
 		self.confirmed.set()
 	
-	def halt(self):
-		self.stop.set()
+	def stop(self):
+		self.stopped.set()
 		self.confirmed.clear()
 	
 	def clear(self):
 		self.cook_time = 0
-		self.cook_temperature = 0
+		self.cook_temp = 0
 		self.confirmed.clear()
-		self.stop.clear()
+		self.stopped.clear()
 
 
 class ToasterController(object):
@@ -168,77 +175,51 @@ class ToasterController(object):
 	timer = None
 
 	def __init__(self, instructions):
-		self.timer = CookTimer()
 		self.instructions = instructions
+		self.timer = CookTimer()
 
 	def start(self):
 		self.lower_platform()
 		self.set_heating_element()
-		self.timer.set(instructions.cook_time)
+		self.timer.set(self.instructions.cook_time)
 		self.timer.start()
 
+	def end(self):
+		self.set_heating_element()
+		self.timer.clear()
+		self.instructions.clear()
+		self.raise_platform()
+
 	def execute(self):
-		'''
-		Have the instructions been confirmed?
-		If so,:
-			lower platform
-			set temperature
-			set timer
-			loop:
-				run until timer finishes or abort signal receives
-				has timer finished?
-				has abort signal been received?
-			clear temperature
-			clear timer
-			raise platform
-
-		'''		
-		self.instructions.confirmed.wait()
-		self.start()
+		''' Loop until shut off '''
 		while True:
-
-
-			...
-		...
-
-	# this method needs a better name
-	def react_while_cooking(self):
-		''' Should the execute thread do something during cooking?
-			In other words, is there a condition the controller should react to?
-		'''
-		if self.timer.finished:
-			return True
+			self.instructions.confirmed.wait() # have the instructions been confirmed? wait until this is true
+			self.start()
+			self.instructions.stopped.wait(timeout=self.timer.cook_time) # wait until user signals to stop, up to the length of the timer
+			self.end()
 
 	def lower_platform(self):
+		self.loaded = True
 		...
 	def raise_platform(self):
+		self.loaded = False
 		...
 	def set_heating_element(self):
 		...
-	def get_heating_element(self):
+	def get_temperature(self):
 		...
 
 
 def listen(instructions):
 	''' this thread listens for messages from the app '''
-	''' For the time being, let's say this is where it gets messages.
-		For testing purposes, I'll substitute with input() '''
 	while True:
+		'''
+		Upon receiving confirmation, call instructions.confirm()
+		Upon receiving stop order, call instructions.stop()
+		'''
 		...
-		# time = int(input('Time (sec)\n> '))
-		# temperature = int(input('Temperature (°F)\n> '))
-		# instructions.write_time(time)
-		# instructions.write_temperature(temperature)
-		# if input('Confirm? > '):
-		# 	instructions.confirm()
 
-def execute(instructions):
-	''' this thread carries out instructions received from the app '''
-	while True:
-		...
-		# instructions.confirmed.wait()
-		# instructions.execute()
-
+''' For future reference, using end='\r' allows printing over same line '''
 if __name__ == '__main__':
 	# one instruction structure for each toaster slot
 	instructions = CookInstructions()
@@ -246,7 +227,7 @@ if __name__ == '__main__':
 	# this thread will listen for messages from the app
 	listener = thread.Thread(target=listen, name='listener', args=(instructions,), daemon=True)
 	listener.start()
-	execute = thread.Thread(target=execute, name='executor', args=(instructions,))
+	execute = thread.Thread(target=controller.execute, name='executor')
 	execute.start()
 	listener.join()
 	execute.join()
