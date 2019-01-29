@@ -1,59 +1,7 @@
-'''
-parts to control:
-	cooling fan
-	heating element
-	timer
-	slot mechanism
-Use case:
-- User inserts food, then sends instruction
-					OR
-  User sends instruction, then inserts food
-- Toaster lowers food into position
-- Toaster cooks food using provided instructions
-- Toaster raises food out of position
-One thread for each slot. Two slots, so two threads
-A separate thread should listen for instructions from user. Write to data structure which the main code reads from? Its writing takes priority over main program's reading
-Instruction validity check:
-	Is indicated timer value positive?
-	  N: report entry error
-	Is indicated temperature value greater than some threshold?
-	  N: report low temperature
-Cook food:
-	loop until timer is no longer positive:
-		if abort,
-			set timer to 0
-			disable heating mechanism
-			exit loop
-		read temperature
-		if temperature is too low,
-			increase power to heating element
-		if temperature is too high,
-			decrease power to heating element
-When instructions/confirmation received:
-	Are instructions valid?
-	 N: report
-	 Y: Note that valid instructions received
-When food inserted:
-	Note that food inserted
-If food inserted and valid instructions received,
-	lower slot mechanism
-		wait for mechanism to complete
-	set heating element
-	enable cooling fan
-	set timer
-	cook food
-	set timer to 0
-	disable heating element
-	disable cooling fan
-	raise slot mechanism
-		wait for mechanism to complete
-'''
 
 
 
-
-# for elapsed wall-clock time: time.time()
-#   returns time in seconds (as float) since Unix epoch, based on system clock
+import socket as sock
 import time
 import threading as thread
 
@@ -86,7 +34,7 @@ class CookTimer(object):
 			return True
 		return self.remaining_time >= 0 # returns true if remaining time is exactly 0
 
-	def to_string(self):
+	def minutes_seconds(self):
 		''' return how much time is left as a tuple of minutes and seconds '''
 		if not self.running:
 			return (0,0)
@@ -109,7 +57,7 @@ class CookTimer(object):
 
 
 class CookInstructions(object):
-	''' Manage access to cooking instructions '''
+	''' Manage access to cooking parameters '''
 	
 	_cook_time, _cook_temp = 0,0
 	mutex_time, mutex_temp = None,None
@@ -121,8 +69,9 @@ class CookInstructions(object):
 
 		self.cook_time = cook_time
 		self.cook_temp = cook_temp
+		# initial state is not set, as expected
 		self.stoppped = thread.Event()
-		self.confirmed = thread.Event() # what is the initial state of a threading.Event object?
+		self.confirmed = thread.Event()
 
 	@property
 	def cook_time(self):
