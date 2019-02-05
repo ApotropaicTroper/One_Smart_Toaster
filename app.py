@@ -46,9 +46,24 @@ class InstructionEntryMenu(Screen):
 		self.layout.add_widget(Label(text='test_layout_1'))
 		self.layout.add_widget(Label(text='test_layout_2'))
 		self.time_input = TextInput(text='time_input', multiline=False)
+		self.time_input.bind(on_text_validate=self.on_enter_time)
 		self.layout.add_widget(self.time_input)
+		self.cook_time = 0
+		self.cook_temp = 0
 
-	
+
+	def on_enter_time(self, instance):
+		# print(instance.text)
+		if not instance.text.isdigit():
+			print('Not a number!')
+			return
+		if len(instance.text) > 4:
+			print('Too long! (4 digits)')
+			return
+		print(instance.text)
+		...
+
+
 	# @staticmethod
 	# def on_enter(instance,value):
 	# 	print('testing on_enter')
