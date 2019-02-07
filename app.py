@@ -2,7 +2,9 @@
 import kivy
 from kivy.app import App
 from kivy.utils import escape_markup
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 # from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
@@ -41,28 +43,41 @@ class MainMenu(Screen):
 class InstructionEntryMenu(Screen):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.layout = GridLayout(rows=5, cols=1)
+
+	# PageLayout: use for default 
+		self.layout = GridLayout(rows=50,cols=1)
+		# self.layout = BoxLayout(orientation='vertical', padding=[10,50,10,50])
 		self.add_widget(self.layout)
-		self.layout.add_widget(Label(text='test_layout_1'))
-		self.layout.add_widget(Label(text='test_layout_2'))
-		self.time_input = TextInput(text='time_input', multiline=False)
+		# self.layout.add_widget(Label(text=''))
+
+		self.layout.add_widget(Label(text='Timer:', size_hint=(1/3,1/3), size_hint_max_y=30))
+		self.time_input = TextInput(text='time_input', multiline=False, size_hint=(1/3,1/3), size_hint_max_y=30)
 		self.time_input.bind(on_text_validate=self.on_enter_time)
+		self.time_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/3), size_hint_max_y=30)
 		self.layout.add_widget(self.time_input)
+		self.layout.add_widget(self.time_input_confirm)
+
+		self.layout.add_widget(Label(text='Temperature:', size_hint=(1/3,1/3), size_hint_max_y=30))
+		self.temp_input = TextInput(text='temp_input', multiline=False, size_hint=(1/3,1/3), size_hint_max_y=30)
+		self.temp_input.bind(on_text_validate=self.on_enter_temp)
+		self.temp_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/3), size_hint_max_y=30)
+		self.layout.add_widget(self.temp_input)
+		self.layout.add_widget(self.temp_input_confirm)
+
 		self.cook_time = 0
 		self.cook_temp = 0
 
 
 	def on_enter_time(self, instance):
-		# print(instance.text)
 		if not instance.text.isdigit():
-			print('Not a number!')
+			self.time_input_confirm.text = '[i][color=#FF0000]Not a number![/color][/i]'
 			return
 		if len(instance.text) > 4:
-			print('Too long! (4 digits)')
+			self.time_input_confirm.text = '[i][color=#FF0000]Too long! (4 digits)[/color][/i]'
 			return
-		print(instance.text)
-		...
 
+	def on_enter_temp(self, instance):
+		...
 
 	# @staticmethod
 	# def on_enter(instance,value):
