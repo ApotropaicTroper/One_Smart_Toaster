@@ -6,7 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-# from kivy.uix.button import Button
+from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 
@@ -51,24 +51,33 @@ class InstructionEntryMenu(Screen):
 		self.add_widget(self.layout)
 		# self.layout.add_widget(Label(text=''))
 
-		self.layout.add_widget(Label(text='Timer:', size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.75}))
+		self.layout.add_widget(Label(text='Timer:', size_hint=(1/3,1/10), pos_hint={'x':.4,'y':.75}))
 
-		self.time_input = TextInput(text='', multiline=False, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.625})
+		self.time_input = TextInput(text='', multiline=False, size_hint=(1/3,1/10), pos_hint={'x':.4,'y':.625})
 		self.time_input.bind(on_text_validate=self.on_enter_time)
-		self.time_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.5})
+		self.time_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/10), pos_hint={'x':.4,'y':.5})
 		self.layout.add_widget(self.time_input)
 		self.layout.add_widget(self.time_input_confirm)
 
-		self.layout.add_widget(Label(text='Temperature:', size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.375}))
-		self.temp_input = TextInput(text='', multiline=False, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.25})
+		self.layout.add_widget(Label(text='Temperature:', size_hint=(1/3,1/10), pos_hint={'x':.4,'y':.375}))
+		self.temp_input = TextInput(text='', multiline=False, size_hint=(1/3,1/10), pos_hint={'x':.4,'y':.25})
 		self.temp_input.bind(on_text_validate=self.on_enter_temp)
-		self.temp_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.125})
+		self.temp_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/10), pos_hint={'x':.4,'y':.125})
 		self.layout.add_widget(self.temp_input)
 		self.layout.add_widget(self.temp_input_confirm)
+
+		self.back_button = Button(text='<-', size_hint=(1/10,1/20), pos_hint={'x':0,'y':0})
+		self.back_button.bind(on_press = self.on_back)
+		self.layout.add_widget(self.back_button)
 
 		self.cook_time = 0
 		self.cook_temp = 0
 
+
+	def on_back(self, instance):
+		sm.transition.direction = 'down'
+		sm.current = 'Main'
+		
 
 	def on_enter_time(self, instance):
 		if not instance.text.isdigit():
@@ -97,8 +106,8 @@ class InstructionEntryMenu(Screen):
 
 sm = ScreenManager()	# direction can be left/right/up/down
 # sm.add_widget(StartMenu(name='Start'))
-# sm.add_widget(MainMenu(name='Main'))
 sm.add_widget(InstructionEntryMenu(name='Instruction'))
+sm.add_widget(MainMenu(name='Main'))
 
 class AppBase(App):
 	def build(self):
