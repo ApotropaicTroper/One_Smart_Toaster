@@ -45,22 +45,24 @@ class InstructionEntryMenu(Screen):
 		super().__init__(**kwargs)
 
 	# PageLayout: use for default 
-		self.layout = GridLayout(rows=50,cols=1)
+		# self.layout = GridLayout(rows=50,cols=1)
+		self.layout = FloatLayout(size=(300,300))
 		# self.layout = BoxLayout(orientation='vertical', padding=[10,50,10,50])
 		self.add_widget(self.layout)
 		# self.layout.add_widget(Label(text=''))
 
-		self.layout.add_widget(Label(text='Timer:', size_hint=(1/3,1/3), size_hint_max_y=30))
-		self.time_input = TextInput(text='time_input', multiline=False, size_hint=(1/3,1/3), size_hint_max_y=30)
+		self.layout.add_widget(Label(text='Timer:', size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.75}))
+
+		self.time_input = TextInput(text='', multiline=False, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.625})
 		self.time_input.bind(on_text_validate=self.on_enter_time)
-		self.time_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/3), size_hint_max_y=30)
+		self.time_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.5})
 		self.layout.add_widget(self.time_input)
 		self.layout.add_widget(self.time_input_confirm)
 
-		self.layout.add_widget(Label(text='Temperature:', size_hint=(1/3,1/3), size_hint_max_y=30))
-		self.temp_input = TextInput(text='temp_input', multiline=False, size_hint=(1/3,1/3), size_hint_max_y=30)
+		self.layout.add_widget(Label(text='Temperature:', size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.375}))
+		self.temp_input = TextInput(text='', multiline=False, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.25})
 		self.temp_input.bind(on_text_validate=self.on_enter_temp)
-		self.temp_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/3), size_hint_max_y=30)
+		self.temp_input_confirm = Label(text='', markup=True, size_hint=(1/3,1/8), pos_hint={'x':.4,'y':.125})
 		self.layout.add_widget(self.temp_input)
 		self.layout.add_widget(self.temp_input_confirm)
 
@@ -77,7 +79,12 @@ class InstructionEntryMenu(Screen):
 			return
 
 	def on_enter_temp(self, instance):
-		...
+		if not instance.text.isdigit():
+			self.temp_input_confirm.text = '[i][color=#FF0000]Not a number![/color][/i]'
+			return
+		if len(instance.text) > 4:
+			self.temp_input_confirm.text = '[i][color=#FF0000]Too long! (4 digits)[/color][/i]'
+			return
 
 	# @staticmethod
 	# def on_enter(instance,value):
