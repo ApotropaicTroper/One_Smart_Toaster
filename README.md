@@ -12,6 +12,6 @@ by:
 
 Object naming convention:
  - Classes should be named in UpperCamelCase
- - Methods should be named in lowerCamelCase
+ - Methods should be named in lowerCamelCase or snake_case
  - Variables should be named in snake_case
-
+ - preferred style: PEP 8
