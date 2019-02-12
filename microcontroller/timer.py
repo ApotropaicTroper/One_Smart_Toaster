@@ -3,7 +3,7 @@ import threading as thread
 import time
 
 class CookTimer(object):
-	''' countdown timer '''
+	''' Countdown timer '''
 
 	cook_time = 0
 	start_time = 0
@@ -34,7 +34,7 @@ class CookTimer(object):
 	def minutes_seconds(self):
 		''' return how much time is left as a tuple of minutes and seconds '''
 		if not self.running:
-			return (0,0)
+			return None
 		return divmod(self.remaining_time, 60)
 
 	def set(self, cook_time):
@@ -43,10 +43,12 @@ class CookTimer(object):
 		self.cook_time = cook_time
 	
 	def start(self):
+		''' Start the timer '''
 		self.start_time = time.time()
 		self.running = True
 	
 	def clear(self):
+		''' Stop the timer and reset all settings '''
 		self.cook_time = 0
 		self.start_time = 0
 		self.running = False

@@ -14,7 +14,7 @@ class CookInstructions(object):
 
 		self.cook_time = cook_time
 		self.cook_temp = cook_temp
-		# initial state  not set, as expected
+		# initial state equals not set, as expected
 		self.stoppped = thread.Event()
 		self.confirmed = thread.Event()
 
@@ -49,13 +49,16 @@ class CookInstructions(object):
 			self._cook_temp = value
 	
 	def confirm(self):
+		''' User has confirmed submitted instructions '''
 		self.confirmed.set()
 	
 	def stop(self):
+		''' User wishes to halt the cooking process '''
 		self.stopped.set()
 		self.confirmed.clear()
 	
 	def clear(self):
+		''' Reset all provided settings, and clear all flags '''
 		self.cook_time = 0
 		self.cook_temp = 0
 		self.confirmed.clear()

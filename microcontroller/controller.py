@@ -1,8 +1,6 @@
 
 from CookTimer import CookTimer
 
-
-
 class ToasterController(object):
 
 	loaded = False
@@ -14,12 +12,14 @@ class ToasterController(object):
 		self.timer = CookTimer()
 
 	def start(self):
+		''' Begin cooking '''
 		self.lower_platform()
 		self.set_heating_element()
 		self.timer.set(self.instructions.cook_time)
 		self.timer.start()
 
 	def end(self):
+		''' Cooking has finished '''
 		self.set_heating_element()
 		self.timer.clear()
 		self.instructions.clear()
