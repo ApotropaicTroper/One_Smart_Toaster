@@ -1,5 +1,5 @@
 
-from CookTimer import CookTimer
+from timer import CookTimer
 
 class ToasterController(object):
 
