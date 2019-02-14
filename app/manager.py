@@ -42,8 +42,6 @@ class RootMenu(Menu):
 
 	def on_touch_down(self, touch):
 		self.switch_to_child(0)
-		# self.sm.transition.direction = 'up'
-		# self.sm.current = 'Main'
 
 
 
@@ -57,9 +55,6 @@ class MenuSystem(object):
 		self.sm = ScreenManager()	# direction can be left/right/up/down
 		self.root = RootMenu()
 		self.add_menu(self.root)
-		# self.menus[self.root.name] = self.root
-		# self.sm.add_widget(self.root)
-		# print(self.menus)
 
 	def add_menu(self, menu, parent=None):
 		''' Add a new menu to the manager '''
