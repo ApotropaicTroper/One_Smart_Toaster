@@ -11,7 +11,7 @@ while True:
    print('Got connection from', addr)
    output = 'Thank you for connecting'
    c.sendall(output.encode('utf-8'))
-   data = c.recv(12345)
+   data = c.recv(12345).decode()
    print('Recieved: ', data, " from client")
    if(data == 'What Up'):
       c.sendall('Hey Dude'.encode('utf-8'))
