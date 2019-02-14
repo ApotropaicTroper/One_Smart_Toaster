@@ -94,8 +94,9 @@ class TestScreen(Screen):
 
 
     def sendData(self, placeholder):
-        print(type(s))
-        s.sendall('What Up'.encode("utf-8"))
+        s.send('What Up'.encode('utf-8'))
+        s.shutdown(socket.SHUT_RDWR)
+        s.close()
 
     def backFunction(self, next_screen):
         sm.transition.direction = 'right'
