@@ -15,7 +15,7 @@ class AppBase(App):
 if __name__ == '__main__':
 	manager = MenuSystem()
 	manager.add_menu(MainMenu(name='Main'),  parent='root')
-	# manager.add_menu(InstructionEntryMenu(name='Entry'), parent='Main')
+	manager.add_menu(InstructionEntryMenu(name='Entry'), parent='Main')
 
 	AppBase().run()
 	# print(manager.menus)
