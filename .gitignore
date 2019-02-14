@@ -1,0 +1,4 @@
+./app/__pycache__
+./microcontroller/__pycache__
+./app.py
+./microcontroller.py
