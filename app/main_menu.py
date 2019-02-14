@@ -13,8 +13,8 @@ class MainMenu(Menu):
 
 
 
-
-
+	def on_touch_down(self, touch):
+		self.switch_to_child(0)
 
 
 
