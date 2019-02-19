@@ -7,7 +7,6 @@ from kivy.uix.label import Label
 
 
 
-
 class Menu(Screen):
 	''' Menu object; acts as node in the hierarchy '''
 
@@ -17,10 +16,10 @@ class Menu(Screen):
 		self.depth = None
 		self.name = name
 		self.parent_menu = None
-		self.child_menus = []
+		self.child_menus = {}
 
 	def add_child(self, menu):
-		self.child_menus.append(menu)
+		self.child_menus[menu.name] = menu
 		menu.parent_menu = self
 		menu.depth = self.depth + 1
 
@@ -28,9 +27,11 @@ class Menu(Screen):
 		self.sm.transition.direction = 'down'
 		self.sm.current = self.parent_menu.name
 
-	def switch_to_child(self, index):
+	def switch_to_child(self, name):
 		self.sm.transition.direction = 'up'
-		self.sm.current = self.child_menus[index].name
+		self.sm.current = name
+
+
 
 class RootMenu(Menu):
 	''' Welcome/start menu '''
@@ -48,7 +49,6 @@ class RootMenu(Menu):
 class MenuSystem(object):
 	''' Menu Tree '''
 
-
 	def __init__(self):
 		''' Initialize screen manager and root menu (start screen) '''
 		self.menus = {}	# name:widget pairs
@@ -65,9 +65,5 @@ class MenuSystem(object):
 			menu.parent_menu.add_child(menu)
 
 		self.menus[menu.name] = menu
-
-
 		self.sm.add_widget(menu)
-
-
 
