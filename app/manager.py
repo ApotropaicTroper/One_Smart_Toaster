@@ -10,10 +10,16 @@ from kivy.uix.label import Label
 class Menu(Screen):
 	''' Menu object; acts as node in the hierarchy '''
 
+	# static variable; all Menu objects access the same ScreenManager
+	_sm = ScreenManager()
+
+	# static, read-only variable
+	@property
+	def sm(self):
+		return self._sm
+
 	def __init__(self, name, parent=None, **kwargs):
 		super().__init__(**kwargs)
-		self.sm = None
-		self.depth = None
 		self.name = name
 		self.parent_menu = None
 		self.child_menus = {}
@@ -21,7 +27,7 @@ class Menu(Screen):
 	def add_child(self, menu):
 		self.child_menus[menu.name] = menu
 		menu.parent_menu = self
-		menu.depth = self.depth + 1
+		self.sm.add_widget(menu)
 
 	def switch_to_parent(self):
 		self.sm.transition.direction = 'down'
@@ -38,32 +44,11 @@ class RootMenu(Menu):
 
 	def __init__(self, **kwargs):
 		super().__init__(name='root', **kwargs)
-		self.depth = 0
+		self.sm.add_widget(self)
 		self.add_widget(Label(text='[i]Touch to begin[/i]', markup=True))
 
 	def on_touch_down(self, touch):
 		self.switch_to_child('Main')
 
 
-
-class MenuSystem(object):
-	''' Menu Tree '''
-
-	def __init__(self):
-		''' Initialize screen manager and root menu (start screen) '''
-		self.menus = {}	# name:widget pairs
-		self.sm = ScreenManager()	# direction can be left/right/up/down
-		self.root = RootMenu()
-		self.add_menu(self.root)
-
-	def add_menu(self, menu, parent=None):
-		''' Add a new menu to the manager '''
-
-		menu.sm = self.sm	# grant child access to Screen Manager
-		if parent is not None:
-			menu.parent_menu = self.menus[parent]
-			menu.parent_menu.add_child(menu)
-
-		self.menus[menu.name] = menu
-		self.sm.add_widget(menu)
 

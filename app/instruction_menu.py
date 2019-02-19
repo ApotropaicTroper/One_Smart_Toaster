@@ -1,6 +1,5 @@
 
 import kivy
-from kivy.utils import escape_markup
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -8,14 +7,18 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 
 from manager import Menu
+from defaults_menu import DefaultsMenu
 
 class InstructionEntryMenu(Menu):
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 
+		self.add_child(DefaultsMenu(name='Defaults'))
+
+
 		''' Containing widget for this menu '''
-		self.base_layout = FloatLayout(size=(300,300))
+		self.base_layout = FloatLayout(size=(200,300))
 		self.add_widget(self.base_layout)
 
 		''' Containing widget for user input '''
@@ -58,7 +61,7 @@ class InstructionEntryMenu(Menu):
 		self.switch_to_parent()
 
 	def on_defaults(self, instance):
-		...
+		self.switch_to_child('Defaults')
 
 
 
