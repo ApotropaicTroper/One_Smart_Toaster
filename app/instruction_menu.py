@@ -14,12 +14,13 @@ class InstructionEntryMenu(Menu):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 
-		# PageLayout: use for defaults menu
+		''' Containing widget for this menu '''
 		self.base_layout = FloatLayout(size=(300,300))
 		self.add_widget(self.base_layout)
+
+		''' Containing widget for user input '''
 		self.entry_layout = FloatLayout(size_hint=(1,.9), pos_hint={'x':0,'y':.1})
 		self.base_layout.add_widget(self.entry_layout)
-
 
 		self.entry_layout.add_widget(Button(text='Timer:', size_hint=(.5,None), height=30, pos_hint={'x':0,'y':.8}))
 		self.time_input = TextInput(text='', hint_text='00:00', multiline=False, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.8})
@@ -27,45 +28,38 @@ class InstructionEntryMenu(Menu):
 		self.time_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.7})
 		self.entry_layout.add_widget(self.time_input_error)
 
-
-
 		self.entry_layout.add_widget(Button(text='Temperature:', size_hint=(.5,None), height=30, pos_hint={'x':0,'y':.6}))
 		self.temp_input = TextInput(text='', hint_text='', multiline=False, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.6})
 		self.entry_layout.add_widget(self.temp_input)
 		self.temp_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.5})
 		self.entry_layout.add_widget(self.temp_input_error)
 
-
-
-
 		self.time_input.bind(on_text_validate=self.on_enter_time)
 		self.temp_input.bind(on_text_validate=self.on_enter_temp)
 
-
-
-
-
-
-
+		''' Containing widget for user navigation '''
 		self.navigation_layout = BoxLayout(orientation='horizontal', spacing=0, size_hint=(1,.1))
 		self.base_layout.add_widget(self.navigation_layout)
 
 		self.back_button = Button(text='<- Back')
-		self.back_button.bind(on_press = self.on_back)
-		self.defaults_button = Button(text='Presets ->')
-		# self.defaults_button.bind(on_press = self.on_defaults)
 		self.navigation_layout.add_widget(self.back_button)
+		self.defaults_button = Button(text='Presets ->')
 		self.navigation_layout.add_widget(self.defaults_button)
-		# self.base_layout.add_widget(Label(text='test'))
+
+		self.back_button.bind(on_press = self.on_back)
+		self.defaults_button.bind(on_press = self.on_defaults)
 
 		self.cook_time = 0
 		self.cook_temp = 0
 
 
-
 	''' Callbacks '''
 	def on_back(self, instance):
 		self.switch_to_parent()
+
+	def on_defaults(self, instance):
+		...
+
 
 
 	def on_enter_time(self, instance):
@@ -89,7 +83,6 @@ class InstructionEntryMenu(Menu):
 			self.temp_input_error.text = '[color=#FF0000]Not a number[/color]'
 		else:
 			self.cook_temp = int(temp)
-
 
 
 
