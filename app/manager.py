@@ -42,7 +42,7 @@ class RootMenu(Menu):
 		self.add_widget(Label(text='[i]Touch to begin[/i]', markup=True))
 
 	def on_touch_down(self, touch):
-		self.switch_to_child(0)
+		self.switch_to_child('Main')
 
 
 
