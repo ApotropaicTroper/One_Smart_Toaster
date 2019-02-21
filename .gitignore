@@ -1,4 +1,5 @@
-./app/__pycache__
-./microcontroller/__pycache__
 ./app.py
 ./microcontroller.py
+./app/__pycache__/
+./app/presets.txt
+./microcontroller/__pycache__/
