@@ -7,18 +7,10 @@ from kivy.uix.button import Button
 from kivy.uix.button import Label
 from kivy.uix.boxlayout import BoxLayout
 
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
 Builder.load_string("""
 <MenuScreen>:
     BoxLayout:
         orientation: "vertical"
-
-
-
-
-
 
 <SettingsScreen>:
     BoxLayout:
@@ -94,9 +86,15 @@ class TestScreen(Screen):
 
 
     def sendData(self, placeholder):
-        s.send('What Up'.encode('utf-8'))
-        s.shutdown(socket.SHUT_RDWR)
-        s.close()
+        data = 'Test Worked'
+        try:
+            s.send(data.encode('utf-8'))
+        except socket.error:
+            print("An error has occurred... closing connection to server")
+        finally:
+            s.shutdown(socket.SHUT_RDWR)
+            s.close()
+
 
     def backFunction(self, next_screen):
         sm.transition.direction = 'right'
@@ -116,10 +114,15 @@ class NetworksScreen(Screen):
         host = socket.gethostname()  # Get local machine name
         port = 12345  # Reserve a port for your service.
 
-        s.connect((host, port))
-        print(s.recv(1024))
-        s.shutdown(socket.SHUT_RDWR)
-        s.close()
+        try:
+            s.connect((host, port))
+            print(s.recv(1024))
+        except socket.error:
+            print("An error has occurred... closing connection to server")
+        finally:
+            s.shutdown(socket.SHUT_RDWR)
+            s.close()
+
 
     def printButtons(self):
         y = 0
@@ -154,7 +157,6 @@ class SettingsScreen(Screen):
             x += 1
 
         while y < len(ssids)-1:
-            #print(ssids[y])
             y += 1
 
         s2 = self.manager.get_screen('networks')
