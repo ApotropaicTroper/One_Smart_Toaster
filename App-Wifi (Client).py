@@ -120,8 +120,8 @@ class NetworksScreen(Screen):
         except socket.error:
             print("An error has occurred... closing connection to server")
         finally:
-            s.shutdown(socket.SHUT_RDWR)
-            s.close()
+            #s.shutdown(socket.SHUT_RDWR)
+            #s.close()
 
 
     def printButtons(self):
