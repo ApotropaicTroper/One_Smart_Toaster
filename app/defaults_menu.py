@@ -10,8 +10,9 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 
-
 from manager import Menu
+
+delimeter = '//'
 
 
 class DefaultsMenu(Menu):
@@ -19,18 +20,37 @@ class DefaultsMenu(Menu):
 	def on_pre_enter(self):
 		''' Load Presets '''
 		with open('presets.txt', mode='r') as f:
-			self.presets = [p.strip().split() for p in f]
+			self.presets = [p.strip().split(delimeter) for p in f]
 		# print(self.presets)
 		self.names = [p[0] for p in self.presets]
-		self.times = [int(p[1]) for p in self.presets]
-		self.temperatures = [int(p[2]) for p in self.presets]
+		self.times = [p[1] for p in self.presets]
+		self.temperatures = [p[2] for p in self.presets]
 		self.labels = [Button(text=n,size_hint_y=None,height=50) for n in self.names]
-		self.readouts = [Label(text='{} seconds\n{}° '.format(time, temp), size_hint_y=None, height=50) for time, temp in zip(self.times, self.temperatures)]
+		self.readouts = [Label(text='{}\n{}° '.format(self.to_minsec(time), temp), size_hint_y=None, height=50) for time, temp in zip(self.times, self.temperatures)]
 
 		for name, data in zip(self.labels, self.readouts):
 			self.scroll_list.add_widget(name)
 			self.scroll_list.add_widget(data)
 		self.scroll_list.add_widget(self.new)
+
+	def on_leave(self):
+		''' Save Presets '''
+		with open('presets.txt', mode='w') as f:
+			for p in self.presets:
+				f.write(delimeter.join(p))
+				f.write('\n')
+
+		for l,r in zip(self.labels, self.readouts):
+			self.scroll_list.remove_widget(l)
+			self.scroll_list.remove_widget(r)
+		self.scroll_list.remove_widget(self.new)
+		del self.labels
+		del self.readouts
+
+	def to_minsec(self, seconds):
+		minutes, seconds = divmod(int(seconds),60)
+		return ':'.join([str(minutes).rjust(2,'0'), str(seconds).rjust(2,'0')])
+
 
 	def on_new_preset(self, instance):
 		''' User is going to add a new preset '''
@@ -45,31 +65,21 @@ class DefaultsMenu(Menu):
 			self.on_set_preset(text)
 			self.scroll_list.remove_widget(instance)
 
-
-
 	def on_set_preset(self, text):
 		''' Add a new preset '''
 		settings = text.split('\n')
 		print('Length of settings: ', len(settings))
 		name = settings[0]
-		time = int(settings[1])
-		temp = int(settings[2])
+		time = settings[1]
+		temp = settings[2]
 		self.labels.append(Button(text=name,size_hint_y=None,height=50))
-		self.readouts.append(Label(text='{} seconds\n{}° '.format(time, temp), size_hint_y=None, height=50))
+		self.readouts.append(Label(text='{}\n{}° '.format(self.to_minsec(time), temp), size_hint_y=None, height=50))
 		self.presets.append([name, time, temp])
 
 		self.scroll_list.add_widget(self.labels[-1])
 		self.scroll_list.add_widget(self.readouts[-1])
 		self.scroll_list.add_widget(self.new)
 
-	def on_leave(self):
-		''' Save Presets '''
-		...
-		for l,r in zip(self.labels, self.readouts):
-			self.scroll_list.remove_widget(l)
-			self.scroll_list.remove_widget(r)
-		del self.labels
-		del self.readouts
 
 
 	def __init__(self, **kwargs):
