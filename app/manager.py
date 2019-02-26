@@ -37,6 +37,10 @@ class Menu(Screen):
 		self.sm.transition.direction = 'up'
 		self.sm.current = name
 
+	def to_minsec(self, seconds):
+		''' format seconds as minutes:seconds '''
+		minutes, seconds = divmod(int(seconds),60)
+		return ':'.join([str(minutes).rjust(2,'0'), str(seconds).rjust(2,'0')])
 
 
 class RootMenu(Menu):
