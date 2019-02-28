@@ -49,7 +49,7 @@ class DefaultsMenu(Menu):
 		self.back_button = Button(text='<- Back')
 		self.navigation_layout.add_widget(self.back_button)
 
-		self.chosen_settings = Label(text='')
+		self.chosen_settings = Label(text='', markup=True)
 		self.navigation_layout.add_widget(self.chosen_settings)
 
 		self.confirm_button = Button(text='Confirm')
@@ -80,7 +80,8 @@ class DefaultsMenu(Menu):
 		self.scroll_list.add_widget(self.new)
 
 	def on_pick(self, instance):
-		self.chosen_settings.text = self.readouts[self.labels.index(instance)].text
+		self.chosen_index = self.labels.index(instance)
+		self.chosen_settings.text = self.readouts[self.chosen_index].text
 
 
 	def on_leave(self):
@@ -128,14 +129,15 @@ class DefaultsMenu(Menu):
 
 
 
-
-
 	def on_back(self, instance):
 		self.switch_to_parent()
 
 	def on_confirm(self, instance):
-		self.parent_menu.time_input.text, self.parent_menu.temp_input.text = self.chosen_settings.text.split()
+		if self.chosen_settings.text != '':
+			self.parent_menu.cook_time = self.presets[self.chosen_index][1]
+			self.parent_menu.cook_temp = self.presets[self.chosen_index][2]
 		self.on_back(instance)
+
 
 
 

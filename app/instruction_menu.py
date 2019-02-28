@@ -13,12 +13,32 @@ from defaults_menu import DefaultsMenu
 
 class InstructionEntryMenu(Menu):
 
+	@property
+	def cook_time(self):
+		return self._cook_time
+	@cook_time.setter
+	def cook_time(self, value):
+		self.time_input.text = self.to_minsec(value)
+		self.confirmed.text = '\n'.join([self.time_input.text, self.confirmed.text.split('\n')[1]])
+		self._cook_time = int(value)
+	@property
+	def cook_temp(self):
+		return self._cook_temp
+	@cook_temp.setter
+	def cook_temp(self, value):
+		self.temp_input.text = str(value)
+		self.confirmed.text = '\n'.join([self.confirmed.text.split('\n')[0], self.temp_input.text])
+		self._cook_temp = int(value)
+
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 
+		''' Cook settings (integers) '''
+		self._cook_time = 0
+		self._cook_temp = 0
+
 		self.add_child(DefaultsMenu(name='Defaults'))
 		# self.add_child(MenuScreen(name='menu'))
-
 
 		''' Containing widget for this menu '''
 		self.base_layout = FloatLayout(size=(200,300))
@@ -40,29 +60,33 @@ class InstructionEntryMenu(Menu):
 		self.temp_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.5})
 		self.entry_layout.add_widget(self.temp_input_error)
 
+		self.time_input.bind(text=self.on_text_time)
 		self.time_input.bind(on_text_validate=self.on_enter_time)
-		# self.time_input.bind(focus=self.on_focus_time)
+		self.temp_input.bind(text=self.on_text_temp)
 		self.temp_input.bind(on_text_validate=self.on_enter_temp)
 
 		''' Containing widget for user navigation '''
 		self.navigation_layout = BoxLayout(orientation='horizontal', spacing=0, size_hint=(1,.1))
 		self.base_layout.add_widget(self.navigation_layout)
 
-		self.settings_button = Button(text='Settings')
-		self.settings_button.bind(on_press=self.on_settings)
 		self.back_button = Button(text='<- Back')
 		self.back_button.bind(on_press=self.on_back)
-		self.defaults_button = Button(text='Defaults ->')
+		self.confirmed = Label(text='\n')
+
+		self.settings_button = Button(text='Settings')
+		self.settings_button.bind(on_press=self.on_settings)
+		self.defaults_button = Button(text='Defaults')
 		self.defaults_button.bind(on_press = self.on_defaults)
+
 		self.navigation_layout.add_widget(self.back_button)
 		self.navigation_layout.add_widget(self.settings_button)
+		self.navigation_layout.add_widget(self.confirmed)
 		self.navigation_layout.add_widget(self.defaults_button)
 
-		self.cook_time = 0
-		self.cook_temp = 0
 
 
-	''' Callbacks '''
+
+	''' Button Callbacks '''
 	def on_back(self, instance):
 		self.switch_to_parent()
 
@@ -73,38 +97,44 @@ class InstructionEntryMenu(Menu):
 		self.switch_to_child('menu')
 
 
-	# def on_focus_time(self, instance, edge):
-	# 	''' If focus transferred to instance, edge=True '''
-
-
-	# 	if not edge and instance.text.isdigit():
-	# 		instance.text = self.to_minsec(instance.text)
-
-
-
-
+	''' Text Field Callbacks '''
+	def on_text_time(self, instance, text):
+		if ':' in text:
+			text = ''.join(text.split(':'))
+		# is the text field empty? Then don't give error message
+		if text.isdigit() or not text:
+			self.time_input_error.text = ''
+		else:
+			self.time_input_error.text = '[color=#FF0000]Not a number[/color]'
+		if len(text) > 4:
+			self.time_input_error.text = '[color=#FF0000]Too long[/color]'
+		if len(text) > 2:
+			text = ':'.join((text[:-2],text[-2:]))
+		instance.text = text
 
 	def on_enter_time(self, instance):
-		time = self.time_input.text
-		if not time.isdigit():
-			self.time_input_error.text = '[color=#FF0000]Not a number[/color]'
-		elif len(time) > 4:
-			self.time_input_error.text = '[color=#FF0000]Too long[/color]'
+		# don't confirm entry unless no error message is present
+		if self.time_input_error.text:
+			return
+		if ':' in instance.text:
+			time = self.to_sec(instance.text)
 		else:
-			if len(time) > 2:
-				minutes = time[:-2]
-				seconds = time[-2:]
-				self.time_input.text = ' : '.join([minutes,seconds])
-				self.cook_time = 60*int(minutes) + int(seconds)
-			else:
-				self.cook_time = int(time)
+			time = int(instance.text)
+		self.cook_time = time
+
+
+
+
+	def on_text_temp(self, instance, text):
+		if text.isdigit() or not text:
+			self.temp_input_error.text = ''
+		else:
+			self.temp_input_error.text = '[color=#FF0000]Not a number[/color]'
 
 	def on_enter_temp(self, instance):
-		temp = self.temp_input.text
-		if not temp.isdigit():
-			self.temp_input_error.text = '[color=#FF0000]Not a number[/color]'
-		else:
-			self.cook_temp = int(temp)
+		if self.temp_input_error.text:
+			return
+		self.cook_temp = int(instance.text)
 
 
 
