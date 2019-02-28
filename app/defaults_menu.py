@@ -1,4 +1,3 @@
-
 import kivy
 from kivy.utils import escape_markup
 from kivy.core.window import Window
@@ -9,6 +8,8 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
+from kivy.clock import Clock
+from functools import partial
 
 from manager import Menu
 
@@ -105,9 +106,28 @@ class DefaultsMenu(Menu):
 		self.new_settings.text = ''
 		self.scroll_list.add_widget(self.new_settings)
 
+	def update_cursor(self, instance, dt):
+		instance.cursor = len(instance.text.split('\n')[1]), 1
+
 	def on_text(self, instance, text):
 		''' User is editing presets '''
-		if len(text.split('\n')) == 4:
+		check_text = text.split('\n')
+
+		if len(check_text) > 1:
+			text = check_text[1]
+			text = ''.join(c for c in text if c.isdigit())
+			if len(text) > 2:
+				text = ':'.join([text[:-2], text[-2:]])
+			check_text[1] = text
+			if len(check_text) == 2:
+				Clock.schedule_once(partial(self.update_cursor, instance), 0)
+		if len(check_text) > 2:
+			text = check_text[2]
+			text = ''.join(c for c in text if c.isdigit())
+			check_text[2] = text
+		text = '\n'.join(check_text)
+		instance.text = text
+		if len(check_text) > 3:
 			self.on_set_preset(text)
 			self.scroll_list.remove_widget(instance)
 
@@ -117,8 +137,8 @@ class DefaultsMenu(Menu):
 		settings = text.strip().split('\n')
 		name, time, temp = settings
 		self.labels.append(Button(text=name,size_hint_y=None,height=50))
-		self.readouts.append(Label(text='{}\n{}° '.format(self.to_minsec(time), temp), size_hint_y=None, height=50))
-		self.presets.append([name, time, temp])
+		self.readouts.append(Label(text='{}\n{}° '.format(time, temp), size_hint_y=None, height=50))
+		self.presets.append([name, str(self.to_sec(time)), temp])
 
 		self.scroll_list.add_widget(self.labels[-1])
 		self.scroll_list.add_widget(self.readouts[-1])
@@ -138,7 +158,6 @@ class DefaultsMenu(Menu):
 			self.parent_menu.cook_time = self.presets[self.chosen_index][1]
 			self.parent_menu.cook_temp = self.presets[self.chosen_index][2]
 		self.on_back(instance)
-
 
 
 
