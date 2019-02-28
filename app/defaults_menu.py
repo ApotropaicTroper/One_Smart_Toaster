@@ -37,7 +37,6 @@ class DefaultsMenu(Menu):
 		self.new_settings.bind(on_press = self.on_set_preset)
 		self.new_settings.bind(text = self.on_text)
 
-
 		''' List presets by name. If clicked, show values of this preset
 		Navigation button brings them back to instruction menu '''
 
@@ -59,8 +58,8 @@ class DefaultsMenu(Menu):
 		self.confirm_button.bind(on_press = self.on_confirm)
 
 
-	''' Callbacks '''
 
+	''' Callbacks '''
 	def on_pre_enter(self):
 		''' Load Presets '''
 		with open('presets.txt', mode='r') as f:
@@ -78,6 +77,7 @@ class DefaultsMenu(Menu):
 			self.scroll_list.add_widget(name)
 			self.scroll_list.add_widget(data)
 		self.scroll_list.add_widget(self.new)
+		self.on_pick(self.labels[0])
 
 	def on_pick(self, instance):
 		self.chosen_index = self.labels.index(instance)
