@@ -19,7 +19,7 @@ class InstructionEntryMenu(Menu):
 	@cook_time.setter
 	def cook_time(self, value):
 		self.time_input.text = self.to_minsec(value)
-		self.confirmed.text = '\n'.join([self.time_input.text, self.confirmed.text.split('\n')[1]])
+		self.chosen_settings.text = '\n'.join([self.time_input.text, self.chosen_settings.text.split('\n')[1]])
 		self._cook_time = int(value)
 	@property
 	def cook_temp(self):
@@ -27,7 +27,7 @@ class InstructionEntryMenu(Menu):
 	@cook_temp.setter
 	def cook_temp(self, value):
 		self.temp_input.text = str(value)
-		self.confirmed.text = '\n'.join([self.confirmed.text.split('\n')[0], self.temp_input.text])
+		self.chosen_settings.text = '\n'.join([self.chosen_settings.text.split('\n')[0], self.temp_input.text])
 		self._cook_temp = int(value)
 
 	def __init__(self, **kwargs):
@@ -71,19 +71,37 @@ class InstructionEntryMenu(Menu):
 
 		self.back_button = Button(text='<- Back')
 		self.back_button.bind(on_press=self.on_back)
-		self.confirmed = Label(text='\n')
+		self.chosen_settings = Label(text='\n')
 
 		self.settings_button = Button(text='Settings')
 		self.settings_button.bind(on_press=self.on_settings)
 		self.defaults_button = Button(text='Defaults')
 		self.defaults_button.bind(on_press = self.on_defaults)
+		self.confirm_button = Button(text = 'Confirm')
+		self.confirm_button.bind(on_press = self.on_confirm)
 
 		self.navigation_layout.add_widget(self.back_button)
 		self.navigation_layout.add_widget(self.settings_button)
-		self.navigation_layout.add_widget(self.confirmed)
+		self.navigation_layout.add_widget(self.chosen_settings)
+		self.navigation_layout.add_widget(self.confirm_button)
 		self.navigation_layout.add_widget(self.defaults_button)
 
+		self.get_default()
 
+	def get_default(self):
+		default_preset = None
+		with open('presets.txt', mode='r') as f:
+			for line in f:
+				if 'Default' in line:
+					default_preset = line.strip().split(self.child_menus['Defaults'].delimeter)
+					print(default_preset)
+					break
+			# print(default_preset)
+		if default_preset is not None:
+			self.cook_time = int(default_preset[1])
+			self.cook_temp = int(default_preset[2])
+		# print(self.cook_time)
+		# print(self.cook_temp)
 
 
 	''' Button Callbacks '''
@@ -95,6 +113,11 @@ class InstructionEntryMenu(Menu):
 
 	def on_settings(self, instance):
 		self.switch_to_child('menu')
+
+	def on_confirm(self, instance):
+		...
+		print('Sending...')
+		''' Send chosen parameters to microcontroller'''
 
 
 	''' Text Field Callbacks '''
@@ -123,8 +146,6 @@ class InstructionEntryMenu(Menu):
 		self.cook_time = time
 
 
-
-
 	def on_text_temp(self, instance, text):
 		if text.isdigit() or not text:
 			self.temp_input_error.text = ''
@@ -135,6 +156,3 @@ class InstructionEntryMenu(Menu):
 		if self.temp_input_error.text:
 			return
 		self.cook_temp = int(instance.text)
-
-
-

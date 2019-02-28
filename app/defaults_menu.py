@@ -12,10 +12,11 @@ from kivy.uix.textinput import TextInput
 
 from manager import Menu
 
-delimeter = '//'
 
 
 class DefaultsMenu(Menu):
+
+	delimeter = '//'
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -63,8 +64,7 @@ class DefaultsMenu(Menu):
 	def on_pre_enter(self):
 		''' Load Presets '''
 		with open('presets.txt', mode='r') as f:
-			self.presets = [p.strip().split(delimeter) for p in f]
-		# print(self.presets)
+			self.presets = [p.strip().split(self.delimeter) for p in f]
 		self.names = [p[0] for p in self.presets]
 		self.times = [p[1] for p in self.presets]
 		self.temperatures = [p[2] for p in self.presets]
@@ -77,18 +77,19 @@ class DefaultsMenu(Menu):
 			self.scroll_list.add_widget(name)
 			self.scroll_list.add_widget(data)
 		self.scroll_list.add_widget(self.new)
-		self.on_pick(self.labels[0])
+		for i,p in enumerate(self.presets):
+			if 'Default' in p:
+				self.on_pick(self.labels[i])
 
 	def on_pick(self, instance):
 		self.chosen_index = self.labels.index(instance)
 		self.chosen_settings.text = self.readouts[self.chosen_index].text
 
-
 	def on_leave(self):
 		''' Save Presets '''
 		with open('presets.txt', mode='w') as f:
 			for p in self.presets:
-				f.write(delimeter.join(p))
+				f.write(self.delimeter.join(p))
 				f.write('\n')
 
 		for l,r in zip(self.labels, self.readouts):
