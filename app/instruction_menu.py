@@ -1,6 +1,5 @@
-
-
 import kivy
+import socket
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -9,7 +8,7 @@ from kivy.uix.textinput import TextInput
 
 from manager import Menu
 from defaults_menu import DefaultsMenu
-# from settings import MenuScreen
+from settings import MenuScreen, SettingsScreen, NetworksScreen, s
 
 class InstructionEntryMenu(Menu):
 
@@ -38,7 +37,9 @@ class InstructionEntryMenu(Menu):
 		self._cook_temp = 0
 
 		self.add_child(DefaultsMenu(name='Defaults'))
-		# self.add_child(MenuScreen(name='menu'))
+		self.add_child(MenuScreen(name='menu'))
+		self.add_child(SettingsScreen(name='settings'))
+		self.add_child(NetworksScreen(name='networks'))
 
 		''' Containing widget for this menu '''
 		self.base_layout = FloatLayout(size=(200,300))
@@ -112,7 +113,14 @@ class InstructionEntryMenu(Menu):
 		self.switch_to_child('menu')
 
 	def on_confirm(self, instance):
-		...
+		time = str(self.cook_time) + ' '
+		temp = str(self.cook_temp)
+		time_temp = time+temp
+		try:
+			# s.send(time)
+			s.send(time_temp.encode('utf-8'))
+		except socket.error:
+			print("An error has occurred... closing connection to server")
 		print('Sending...')
 		''' Send chosen parameters to microcontroller'''
 
@@ -142,6 +150,9 @@ class InstructionEntryMenu(Menu):
 			time = int(instance.text)
 		self.cook_time = time
 
+	def to_sec(self, time):
+		print('Hey')
+		#print(time)
 
 	def on_text_temp(self, instance, text):
 		if text.isdigit() or not text:
@@ -153,3 +164,5 @@ class InstructionEntryMenu(Menu):
 		if self.temp_input_error.text or not instance.text:
 			return
 		self.cook_temp = int(instance.text)
+
+
