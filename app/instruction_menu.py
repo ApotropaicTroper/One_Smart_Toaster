@@ -94,14 +94,11 @@ class InstructionEntryMenu(Menu):
 			for line in f:
 				if 'Default' in line:
 					default_preset = line.strip().split(self.child_menus['Defaults'].delimeter)
-					print(default_preset)
+					print('in Instruction_Menu', default_preset)
 					break
-			# print(default_preset)
 		if default_preset is not None:
 			self.cook_time = int(default_preset[1])
 			self.cook_temp = int(default_preset[2])
-		# print(self.cook_time)
-		# print(self.cook_temp)
 
 
 	''' Button Callbacks '''
@@ -153,6 +150,6 @@ class InstructionEntryMenu(Menu):
 			self.temp_input_error.text = '[color=#FF0000]Not a number[/color]'
 
 	def on_enter_temp(self, instance):
-		if self.temp_input_error.text:
+		if self.temp_input_error.text or not instance.text:
 			return
 		self.cook_temp = int(instance.text)
