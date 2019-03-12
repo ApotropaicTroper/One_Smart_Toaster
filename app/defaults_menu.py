@@ -86,6 +86,7 @@ class DefaultsMenu(Menu):
 				self.on_pick(self.labels[i])
 
 	def on_pick(self, instance):
+		''' User chose a preset in the scrollable list '''
 		self.chosen_index = self.labels.index(instance)
 		self.chosen_settings.text = self.readouts[self.chosen_index].text
 		if self.pick_default:
@@ -109,11 +110,13 @@ class DefaultsMenu(Menu):
 		instance.cursor = len(instance.text.split('\n')[1]), 1
 
 	def set_default(self, instance):
+<<<<<<< HEAD
+=======
+		''' User wishes to set a preset as default '''
+>>>>>>> Sperl
 		self.pick_default = True
 		if self.index_default is not None:
 			self.presets[self.index_default] = self.presets[self.index_default][:-1]
-
-
 
 	def on_new_preset(self, instance):
 		''' User is going to add a new preset '''
@@ -140,12 +143,13 @@ class DefaultsMenu(Menu):
 		text = '\n'.join(check_text)
 		instance.text = text
 		if len(check_text) > 3:
-			self.on_set_preset(text)
-			self.scroll_list.remove_widget(instance)
+			instance.text = '\n'.join(check_text[:3])
+			if all(line for line in check_text):
+				self.on_set_preset(text)
+				self.scroll_list.remove_widget(instance)
 
 	def on_set_preset(self, text):
 		''' Add a new preset '''
-		# Need check to ensure that time/temperature settings are integers
 		settings = text.strip().split('\n')
 		name, time, temp = settings
 		self.labels.append(Button(text=name,size_hint_y=None,height=50))
@@ -155,11 +159,6 @@ class DefaultsMenu(Menu):
 		self.scroll_list.add_widget(self.labels[-1])
 		self.scroll_list.add_widget(self.readouts[-1])
 		self.scroll_list.add_widget(self.new)
-
-
-
-
-
 
 
 	def on_back(self, instance):
