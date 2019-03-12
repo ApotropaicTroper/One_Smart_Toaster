@@ -82,7 +82,6 @@ class DefaultsMenu(Menu):
 		self.scroll_list.add_widget(self.new)
 		for i,p in enumerate(self.presets):
 			if 'Default' in p:
-				print('Default index',i)
 				self.index_default = i
 				self.on_pick(self.labels[i])
 
@@ -90,7 +89,6 @@ class DefaultsMenu(Menu):
 		self.chosen_index = self.labels.index(instance)
 		self.chosen_settings.text = self.readouts[self.chosen_index].text
 		if self.pick_default:
-			print('Pick index',self.chosen_index)
 			self.index_default = self.chosen_index
 
 	def on_leave(self):
@@ -111,7 +109,6 @@ class DefaultsMenu(Menu):
 		instance.cursor = len(instance.text.split('\n')[1]), 1
 
 	def set_default(self, instance):
-		print('Start setting a default')
 		self.pick_default = True
 		if self.index_default is not None:
 			self.presets[self.index_default] = self.presets[self.index_default][:-1]
@@ -170,7 +167,6 @@ class DefaultsMenu(Menu):
 
 	def on_confirm(self, instance):
 		if self.pick_default:
-			print('Confirm pick')
 			self.pick_default = False
 			self.presets[self.index_default].append('Default')
 		else:
