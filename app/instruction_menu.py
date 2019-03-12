@@ -18,7 +18,7 @@ class InstructionEntryMenu(Menu):
 	@cook_time.setter
 	def cook_time(self, value):
 		self.time_input.text = self.to_minsec(value)
-		self.chosen_settings.text = '\n'.join([self.time_input.text, self.chosen_settings.text.split('\n')[1]])
+		self.chosen_settings.text = '\n'.join((self.time_input.text, self.chosen_settings.text.split('\n')[1]))
 		self._cook_time = int(value)
 	@property
 	def cook_temp(self):
@@ -26,7 +26,7 @@ class InstructionEntryMenu(Menu):
 	@cook_temp.setter
 	def cook_temp(self, value):
 		self.temp_input.text = str(value)
-		self.chosen_settings.text = '\n'.join([self.chosen_settings.text.split('\n')[0], self.temp_input.text])
+		self.chosen_settings.text = '\n'.join((self.chosen_settings.text.split('\n')[0], self.temp_input.text))
 		self._cook_temp = int(value)
 
 	def __init__(self, **kwargs):
