@@ -39,25 +39,27 @@ class DefaultsMenu(Menu):
 		self.new_settings.bind(on_press = self.on_set_preset)
 		self.new_settings.bind(text = self.on_text)
 
-		''' List presets by name. If clicked, show values of this preset
-		Navigation button brings them back to instruction menu '''
-
-
 		''' Containing widget for user navigation '''
 		self.navigation_layout = BoxLayout(orientation='horizontal', spacing=0, size_hint=(1,.1))
 		self.base_layout.add_widget(self.navigation_layout)
 
 		self.back_button = Button(text='<- Back')
+		self.back_button.bind(on_press = self.on_back)
 		self.navigation_layout.add_widget(self.back_button)
+
+		self.set_default_button = Button(text='Set Default')
+		self.set_default_button.bind(on_press = self.set_default)
+		self.navigation_layout.add_widget(self.set_default_button)
 
 		self.chosen_settings = Label(text='', markup=True)
 		self.navigation_layout.add_widget(self.chosen_settings)
 
 		self.confirm_button = Button(text='Confirm')
+		self.confirm_button.bind(on_press = self.on_confirm)
 		self.navigation_layout.add_widget(self.confirm_button)
 
-		self.back_button.bind(on_press = self.on_back)
-		self.confirm_button.bind(on_press = self.on_confirm)
+		self.pick_default = False
+		self.index_default = None
 
 
 
@@ -80,16 +82,21 @@ class DefaultsMenu(Menu):
 		self.scroll_list.add_widget(self.new)
 		for i,p in enumerate(self.presets):
 			if 'Default' in p:
+				print('Default index',i)
+				self.index_default = i
 				self.on_pick(self.labels[i])
 
 	def on_pick(self, instance):
 		self.chosen_index = self.labels.index(instance)
 		self.chosen_settings.text = self.readouts[self.chosen_index].text
+		if self.pick_default:
+			print('Pick index',self.chosen_index)
+			self.index_default = self.chosen_index
 
 	def on_leave(self):
 		''' Save Presets '''
 		with open('presets.txt', mode='w') as f:
-			for p in self.presets:
+			for i,p in enumerate(self.presets):
 				f.write(self.delimeter.join(p))
 				f.write('\n')
 
@@ -100,14 +107,22 @@ class DefaultsMenu(Menu):
 		del self.labels
 		del self.readouts
 
+	def update_cursor(self, instance, dt):
+		instance.cursor = len(instance.text.split('\n')[1]), 1
+
+	def set_default(self, instance):
+		print('Start setting a default')
+		self.pick_default = True
+		if self.index_default is not None:
+			self.presets[self.index_default] = self.presets[self.index_default][:-1]
+
+
+
 	def on_new_preset(self, instance):
 		''' User is going to add a new preset '''
 		self.scroll_list.remove_widget(self.new)
 		self.new_settings.text = ''
 		self.scroll_list.add_widget(self.new_settings)
-
-	def update_cursor(self, instance, dt):
-		instance.cursor = len(instance.text.split('\n')[1]), 1
 
 	def on_text(self, instance, text):
 		''' User is editing presets '''
@@ -154,10 +169,15 @@ class DefaultsMenu(Menu):
 		self.switch_to_parent()
 
 	def on_confirm(self, instance):
-		if self.chosen_settings.text != '':
-			self.parent_menu.cook_time = self.presets[self.chosen_index][1]
-			self.parent_menu.cook_temp = self.presets[self.chosen_index][2]
-		self.on_back(instance)
+		if self.pick_default:
+			print('Confirm pick')
+			self.pick_default = False
+			self.presets[self.index_default].append('Default')
+		else:
+			if self.chosen_settings.text != '':
+				self.parent_menu.cook_time = self.presets[self.chosen_index][1]
+				self.parent_menu.cook_temp = self.presets[self.chosen_index][2]
+			self.on_back(instance)
 
 
 
