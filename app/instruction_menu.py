@@ -150,10 +150,6 @@ class InstructionEntryMenu(Menu):
 			time = int(instance.text)
 		self.cook_time = time
 
-	def to_sec(self, time):
-		print('Hey')
-		#print(time)
-
 	def on_text_temp(self, instance, text):
 		if text.isdigit() or not text:
 			self.temp_input_error.text = ''
