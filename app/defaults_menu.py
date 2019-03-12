@@ -132,7 +132,7 @@ class DefaultsMenu(Menu):
 			text = check_text[1]
 			text = ''.join(c for c in text if c.isdigit())
 			if len(text) > 2:
-				text = ':'.join([text[:-2], text[-2:]])
+				text = ':'.join((text[:-2], text[-2:]))
 			check_text[1] = text
 			if len(check_text) == 2:
 				Clock.schedule_once(partial(self.update_cursor, instance), 0)
