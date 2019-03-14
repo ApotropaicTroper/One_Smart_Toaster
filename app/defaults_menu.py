@@ -111,6 +111,10 @@ class DefaultsMenu(Menu):
 
 	def set_default(self, instance):
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+		''' User wishes to set a preset as default '''
+>>>>>>> Sperl
 =======
 		''' User wishes to set a preset as default '''
 >>>>>>> Sperl
