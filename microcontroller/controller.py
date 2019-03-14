@@ -13,7 +13,8 @@ class ToasterController(object):
 
 	heating_element_channel = 0
 	fan_channel = 1
-	platform_channel = 2
+	platform_spin_channel = 2
+	platform_direction_channel = 3
 
 	# Requires 3 pins
 	''' Temperature channels '''
@@ -23,7 +24,7 @@ class ToasterController(object):
 		CS0 to CS
 		SCLK to CLK
 https://cdn-learn.adafruit.com/downloads/pdf/max31855-thermocouple-python-library.pdf
-
+https://github.com/doceme/py-spidev
 
 	temp_CLK_channel = 28 	# output; clock
 	temp_DO_channel = 29	# input; data out
@@ -38,9 +39,9 @@ https://cdn-learn.adafruit.com/downloads/pdf/max31855-thermocouple-python-librar
 		GPIO.setup(self.fan_channel, GPIO.OUT)
 		GPIO.setup(self.platform_channel, GPIO.OUT)
 
-		GPIO.setup(self.temp_CLK_channel, GPIO.OUT)
-		GPIO.setup(self.temp_DO_channel, GPIO.IN)
-		GPIO.setup(self.temp_CS_channel, GPIO.OUT)
+		# GPIO.setup(self.temp_CLK_channel, GPIO.OUT)
+		# GPIO.setup(self.temp_DO_channel, GPIO.IN)
+		# GPIO.setup(self.temp_CS_channel, GPIO.OUT)
 
 
 
@@ -67,11 +68,11 @@ https://cdn-learn.adafruit.com/downloads/pdf/max31855-thermocouple-python-librar
 	def set_heating_element(self):
 		...
 	def get_temperature(self):
-		GPIO.output(self.temp_CS_channel, GPIO.HIGH)
-
-
-
-
-
-		GPIO.output(self.temp_CS_channel, GPIO.LOW)
 		...
+
+
+
+
+
+		# GPIO.output(self.temp_CS_channel, GPIO.HIGH)
+		# GPIO.output(self.temp_CS_channel, GPIO.LOW)
