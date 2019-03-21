@@ -57,9 +57,10 @@ class Menu(Screen):
 	def to_sec(self, minsec):
 		''' format minutes:seconds as seconds '''
 		*minutes, seconds = minsec.split(':')
+
 		if not minutes:
 			return int(seconds)
-		return int(minutes)*60 + int(seconds)
+		return int(minutes[0])*60 + int(seconds)
 
 class RootMenu(Menu):
 	''' Welcome/start menu '''
