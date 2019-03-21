@@ -119,7 +119,7 @@ class InstructionEntryMenu(Menu):
 			s.send(time_temp.encode('utf-8'))
 		except socket.error:
 			print("An error has occurred... closing connection to server")
-		print('Send instruction to device')
+		print('Send instruction to device	')
 		self.switch_to_child('Cook')
 		''' Send chosen parameters to microcontroller'''
 
