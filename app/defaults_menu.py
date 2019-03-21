@@ -157,10 +157,6 @@ class DefaultsMenu(Menu):
 		self.scroll_list.add_widget(self.readouts[-1])
 		self.scroll_list.add_widget(self.new)
 
-
-	def on_back(self, instance):
-		self.switch_to_parent()
-
 	def on_confirm(self, instance):
 		if self.pick_default:
 			self.pick_default = False
