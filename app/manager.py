@@ -43,9 +43,11 @@ class Menu(Screen):
 
 	def send(self, message):
 		''' Send message string to pi '''
+		...
 
 	def recv(self):
 		''' Receive data from pi (such as remaining time or current temperature '''
+		...
 
 	def to_minsec(self, seconds):
 		''' format seconds as minutes:seconds '''
