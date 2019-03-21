@@ -12,7 +12,7 @@ class Menu(Screen):
 
 	# static variable; all Menu objects access the same ScreenManager
 	_sm = ScreenManager()
-	size = (200,300)
+	size = (800,600)
 
 	# static, read-only variable
 	@property
@@ -37,6 +37,9 @@ class Menu(Screen):
 	def switch_to_child(self, name):
 		self.sm.transition.direction = 'up'
 		self.sm.current = name
+
+	def on_back(self, button_instance):
+		self.switch_to_parent()
 
 	def to_minsec(self, seconds):
 		''' format seconds as minutes:seconds '''
