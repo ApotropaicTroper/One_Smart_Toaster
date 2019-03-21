@@ -8,6 +8,7 @@ from kivy.uix.textinput import TextInput
 
 from manager import Menu
 from defaults_menu import DefaultsMenu
+from cook_menu import CookMenu
 from settings import MenuScreen, SettingsScreen, NetworksScreen, s
 
 class InstructionEntryMenu(Menu):
@@ -37,12 +38,13 @@ class InstructionEntryMenu(Menu):
 		self._cook_temp = 0
 
 		self.add_child(DefaultsMenu(name='Defaults'))
+		self.add_child(CookMenu(name='Cook'))
 		self.add_child(MenuScreen(name='menu'))
 		self.add_child(SettingsScreen(name='settings'))
 		self.add_child(NetworksScreen(name='networks'))
 
 		''' Containing widget for this menu '''
-		self.base_layout = FloatLayout(size=(200,300))
+		self.base_layout = FloatLayout(size=self.size)
 		self.add_widget(self.base_layout)
 
 		''' Containing widget for user input '''

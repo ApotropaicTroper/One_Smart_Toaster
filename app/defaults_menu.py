@@ -23,7 +23,7 @@ class DefaultsMenu(Menu):
 		super().__init__(**kwargs)
 
 		''' Containing widget for this menu '''
-		self.base_layout = FloatLayout(size=(200,300))
+		self.base_layout = FloatLayout(size=self.size)
 		self.add_widget(self.base_layout)
 
 		''' Scrollable list of presets '''
