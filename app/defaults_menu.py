@@ -110,14 +110,7 @@ class DefaultsMenu(Menu):
 		instance.cursor = len(instance.text.split('\n')[1]), 1
 
 	def set_default(self, instance):
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 		''' User wishes to set a preset as default '''
->>>>>>> Sperl
-=======
-		''' User wishes to set a preset as default '''
->>>>>>> Sperl
 		self.pick_default = True
 		if self.index_default is not None:
 			self.presets[self.index_default] = self.presets[self.index_default][:-1]
