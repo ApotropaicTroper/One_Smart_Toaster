@@ -97,7 +97,6 @@ class InstructionEntryMenu(Menu):
 			for line in f:
 				if 'Default' in line:
 					default_preset = line.strip().split(self.child_menus['Defaults'].delimeter)
-					print('in Instruction_Menu', default_preset)
 					break
 		if default_preset is not None:
 			self.cook_time = int(default_preset[1])
@@ -117,11 +116,11 @@ class InstructionEntryMenu(Menu):
 		temp = str(self.cook_temp)
 		time_temp = time+temp
 		try:
-			# s.send(time)
 			s.send(time_temp.encode('utf-8'))
 		except socket.error:
 			print("An error has occurred... closing connection to server")
 		print('Sending...')
+		self.switch_to_child('Cook')
 		''' Send chosen parameters to microcontroller'''
 
 

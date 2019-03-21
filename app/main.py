@@ -2,7 +2,6 @@
 import kivy
 kivy.require('1.9.1')
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 
 from manager import RootMenu
 from main_menu import MainMenu
