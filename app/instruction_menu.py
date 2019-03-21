@@ -105,8 +105,6 @@ class InstructionEntryMenu(Menu):
 
 
 	''' Button Callbacks '''
-	def on_back(self, instance):
-		self.switch_to_parent()
 
 	def on_defaults(self, instance):
 		self.switch_to_child('Defaults')
