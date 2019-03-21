@@ -3,6 +3,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.clock import Clock	# schedule updates to time and temperature display
 
 from manager import Menu
 
@@ -26,8 +27,6 @@ class CookMenu(Menu):
 
 
 
-
-
 		''' Containing widget for user navigation '''
 		self.navigation_layout = BoxLayout(orientation='horizontal', spacing=0, size_hint=(.4,.1), pos_hint={'x':.3,'y':0})
 		self.base_layout.add_widget(self.navigation_layout)
@@ -35,6 +34,24 @@ class CookMenu(Menu):
 		self.back_button = Button(text='<- Back')
 		self.back_button.bind(on_press=self.on_back)
 		self.navigation_layout.add_widget(self.back_button)
+
+	def on_pre_enter(self):
+		self.update_event = Clock.schedule_interval(self.update_labels, 0.1)
+
+	def on_leave(self):
+		Clock.unschedule(self.update_event)
+		self.update = None
+
+
+	def update_labels(self, dt):
+		print('Receive time and temperature data from device')
+		# print(self.time_label.text)
+		# print(self.to_sec(self.time_label.text))
+
+		self.time_label.text = self.to_minsec(self.to_sec(self.time_label.text)+1)
+		self.temp_label.text = ''.join((str(int(self.temp_label.text[:-2])+1),'°C'))
+
+
 
 	def on_stop(self, instance):
 		''' Send stop message to microcontroller '''
