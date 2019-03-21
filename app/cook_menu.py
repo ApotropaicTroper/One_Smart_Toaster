@@ -18,6 +18,7 @@ class CookMenu(Menu):
 		self.base_layout.add_widget(self.time_label)
 
 		self.stop_button = Button(text='Stop', size_hint=(.4,.2), pos_hint={'x':.3,'y':.5})
+		self.stop_button.bind(on_press = self.on_stop)
 		self.base_layout.add_widget(self.stop_button)
 
 
@@ -31,4 +32,10 @@ class CookMenu(Menu):
 		self.back_button = Button(text='<- Back')
 		self.back_button.bind(on_press=self.on_back)
 		self.navigation_layout.add_widget(self.back_button)
+
+	def on_stop(self, instance):
+		''' Send stop message to microcontroller '''
+		...
+		print('Send stop message to device')
+
 
