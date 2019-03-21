@@ -12,6 +12,7 @@ class Menu(Screen):
 
 	# static variable; all Menu objects access the same ScreenManager
 	_sm = ScreenManager()
+	size = (200,300)
 
 	# static, read-only variable
 	@property
