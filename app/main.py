@@ -13,7 +13,7 @@ class AppBase(App):
 		root = RootMenu()
 		# each Menu creates/destroys its children
 		root.add_child(MainMenu(name='Main'))
-		return root
+		return root.sm
 
 if __name__ == '__main__':
 	AppBase().run()
