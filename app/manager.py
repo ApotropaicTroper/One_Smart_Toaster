@@ -1,8 +1,10 @@
-
 import kivy
 from kivy.utils import escape_markup
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.uix.label import Label
+import socket
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
 
 
 
@@ -41,13 +43,17 @@ class Menu(Screen):
 	def on_back(self, button_instance):
 		self.switch_to_parent()
 
-	def send(self, message):
+	def send(self, s, message):
 		''' Send message string to pi '''
-		...
+		try:
+			s.send(message.encode('utf-8'))
+		except socket.error:
+			print("An error has occurred... couldn't send data")
 
-	def recv(self):
+	def recv(self, c):
 		''' Receive data from pi (such as remaining time or current temperature '''
-		...
+		data = c.recv(12345).decode()
+		#print("Time Remaining: ", data)
 
 	def to_minsec(self, seconds):
 		''' format seconds as minutes:seconds '''
@@ -72,6 +78,8 @@ class RootMenu(Menu):
 
 	def on_touch_down(self, touch):
 		self.switch_to_child('Main')
+
+
 
 
 
