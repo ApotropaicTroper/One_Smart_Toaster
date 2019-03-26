@@ -112,16 +112,14 @@ class InstructionEntryMenu(Menu):
 		self.switch_to_child('menu')
 
 	def on_confirm(self, instance):
-		time = str(self.cook_time) + ' '
-		temp = str(self.cook_temp)
-		time_temp = time+temp
-		try:
-			s.send(time_temp.encode('utf-8'))
-		except socket.error:
-			print("An error has occurred... closing connection to server")
-		print('Send instruction to device')
-		self.switch_to_child('Cook')
-		''' Send chosen parameters to microcontroller'''
+		code = 'Confirm' + ' '
+		placeholder = '0'
+		confirm_info = code + placeholder
+		Menu.send(self, s, confirm_info)
+		while True:
+			Menu.recv(self, s)
+		#self.switch_to_child('Cook')
+			''' Send chosen parameters to microcontroller'''
 
 
 	''' Text Field Callbacks '''
@@ -148,6 +146,10 @@ class InstructionEntryMenu(Menu):
 		else:
 			time = int(instance.text)
 		self.cook_time = time
+		code = 'Time' + ' '
+		c_time = str(self.cook_time)
+		time_info = code + c_time
+		Menu.send(self, s, time_info)
 
 	def on_text_temp(self, instance, text):
 		if text.isdigit() or not text:
@@ -159,5 +161,9 @@ class InstructionEntryMenu(Menu):
 		if self.temp_input_error.text or not instance.text:
 			return
 		self.cook_temp = int(instance.text)
+		code = 'Temp' + ' '
+		c_temp = str(self.cook_temp)
+		temp_info = code + c_temp
+		Menu.send(self, s, temp_info)
 
 
