@@ -115,11 +115,11 @@ class InstructionEntryMenu(Menu):
 		code = 'Confirm' + ' '
 		placeholder = '0'
 		confirm_info = code + placeholder
-		Menu.send(self, s, confirm_info)
-		while True:
-			Menu.recv(self, s)
-		#self.switch_to_child('Cook')
-			''' Send chosen parameters to microcontroller'''
+		self.send(s, confirm_info)
+		''' Send chosen parameters to microcontroller'''
+		# while True:
+		# 	Menu.recv(self, s)
+		self.switch_to_child('Cook')
 
 
 	''' Text Field Callbacks '''
@@ -149,7 +149,7 @@ class InstructionEntryMenu(Menu):
 		code = 'Time' + ' '
 		c_time = str(self.cook_time)
 		time_info = code + c_time
-		Menu.send(self, s, time_info)
+		self.send(s, time_info)
 
 	def on_text_temp(self, instance, text):
 		if text.isdigit() or not text:
@@ -164,6 +164,6 @@ class InstructionEntryMenu(Menu):
 		code = 'Temp' + ' '
 		c_temp = str(self.cook_temp)
 		temp_info = code + c_temp
-		Menu.send(self, s, temp_info)
+		self.send(s, temp_info)
 
 
