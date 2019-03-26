@@ -6,6 +6,7 @@ from kivy.uix.button import Button
 from kivy.clock import Clock	# schedule updates to time and temperature display
 
 from manager import Menu
+from settings import s
 
 class CookMenu(Menu):
 
@@ -48,6 +49,8 @@ class CookMenu(Menu):
 		# print(self.time_label.text)
 		# print(self.to_sec(self.time_label.text))
 
+		self.recv(s)
+
 		self.time_label.text = self.to_minsec(self.to_sec(self.time_label.text)+1)
 		self.temp_label.text = ''.join((str(int(self.temp_label.text[:-2])+1),'°C'))
 
@@ -57,5 +60,7 @@ class CookMenu(Menu):
 		''' Send stop message to microcontroller '''
 		...
 		print('Send stop message to device')
+		stop_message = 'stop'
+		self.send(s, stop_message)
 
 
