@@ -4,7 +4,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.uix.label import Label
 import socket
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
 
 
 
