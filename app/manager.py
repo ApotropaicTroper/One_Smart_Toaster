@@ -2,9 +2,11 @@ import kivy
 from kivy.utils import escape_markup
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.uix.label import Label
+from kivy.clock import Clock
+
 import socket
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
+#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
 
 
 
@@ -53,7 +55,7 @@ class Menu(Screen):
 	def recv(self, c):
 		''' Receive data from pi (such as remaining time or current temperature '''
 		data = c.recv(12345).decode()
-		#print("Time Remaining: ", data)
+		return data
 
 	def to_minsec(self, seconds):
 		''' format seconds as minutes:seconds '''
@@ -78,6 +80,9 @@ class RootMenu(Menu):
 
 	def on_touch_down(self, touch):
 		self.switch_to_child('Main')
+
+
+
 
 
 
