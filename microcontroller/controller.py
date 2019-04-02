@@ -5,6 +5,9 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
 from timer import CookTimer
 from RPi import GPIO
 from instruction import CookInstructions
+import board
+import busio
+import adafruit_drv2605
 
 # total of 40 I/O pins
 
@@ -105,17 +108,37 @@ https://github.com/doceme/py-spidev
         self.raise_platform()
 
     def lower_platform(self):
-        self.loaded = True
-        GPIO.output(self.motor_channel, GPIO.HIGH)
+        i2c = busio.I2C(board.SCL, board.SDA)
+        drv = adafruit_drv2605.DRV2605(i2c)
+        i = 119
+        drv.sequence[0] = adafruit_drv2605.Effect(i)
+        drv.play()
         time.sleep(0.5)
-        GPIO.output(self.motor_channel, GPIO.LOW)
+        drv.stop()
+
+
+
+        self.loaded = True
+        # GPIO.output(self.motor_channel, GPIO.HIGH)
+        # time.sleep(0.5)
+        # GPIO.output(self.motor_channel, GPIO.LOW)
         print("Platform is lowered")
 
     def raise_platform(self):
-        self.loaded = False
-        GPIO.output(self.motor_channel, GPIO.HIGH)
+        i2c = busio.I2C(board.SCL, board.SDA)
+        drv = adafruit_drv2605.DRV2605(i2c)
+        i = 119
+        drv.sequence[0] = adafruit_drv2605.Effect(i)
+        drv.play()
         time.sleep(0.5)
-        GPIO.output(self.motor_channel, GPIO.LOW)
+        drv.stop()
+
+
+
+        self.loaded = False
+        # GPIO.output(self.motor_channel, GPIO.HIGH)
+        # time.sleep(0.5)
+        # GPIO.output(self.motor_channel, GPIO.LOW)
         print("Platform is raised")
 
     def set_heating_element(self):
