@@ -22,14 +22,14 @@ class ToasterController(object):
 
     #heating_element_channel = 0
     #fan_channel = 1
-    motor_channel = 3
+    # motor_channel = 3
     #platform_spin_channel = 2
     #platform_direction_channel = 3
 
     #GPIO.setup(heating_element_channel, GPIO.OUT)
     #GPIO.setup(fan_channel, GPIO.OUT)
     #GPIO.setup(platform_spin_channel, GPIO.OUT)
-    GPIO.setup(motor_channel, GPIO.OUT)
+    # GPIO.setup(motor_channel, GPIO.OUT)
 
 
     # Requires 3 pins
@@ -41,9 +41,9 @@ Pins taken up:
     27
     17
     Motor on:
-    02
-    03
-    04
+    02 (SDA)
+    03 (SCL)
+    04 (IN/TRIG)
     Temperature on:
     08 (CS0)
     11 (CLK)
