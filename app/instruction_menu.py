@@ -11,7 +11,7 @@ from manager import Menu
 from defaults_menu import DefaultsMenu
 from settings import MenuScreen, SettingsScreen, NetworksScreen, s
 
-class InstructionEntryMenu(Menu):
+class InstructionMenu(Menu):
 
 	@property
 	def cook_time(self):
