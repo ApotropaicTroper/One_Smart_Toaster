@@ -5,6 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
+from kivy.clock import Clock
 
 from manager import Menu
 from defaults_menu import DefaultsMenu
@@ -57,11 +58,22 @@ class InstructionEntryMenu(Menu):
 		self.time_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.7})
 		self.entry_layout.add_widget(self.time_input_error)
 
+
 		self.entry_layout.add_widget(Label(text='Temperature:', size_hint=(.5,None), height=30, pos_hint={'x':0,'y':.6}))
 		self.temp_input = TextInput(text='', hint_text='', multiline=False, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.6})
 		self.entry_layout.add_widget(self.temp_input)
 		self.temp_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.5})
 		self.entry_layout.add_widget(self.temp_input_error)
+
+
+		self.entry_layout.add_widget(Label(text='Time Remaining:', size_hint=(.5, None), height=30, pos_hint={'x': 0, 'y': .4}))
+		self.time_output = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.4})
+		self.entry_layout.add_widget(self.time_output)
+
+		self.entry_layout.add_widget(Label(text='Toaster Temperature:', size_hint=(.5, None), height=30, pos_hint={'x': 0, 'y': .2}))
+		self.temp_output = Label(text='', markup=True, size_hint=(.5, None), height=30, pos_hint={'x': .5, 'y': .2})
+		self.entry_layout.add_widget(self.temp_output)
+
 
 		self.time_input.bind(text=self.on_text_time)
 		self.time_input.bind(on_text_validate=self.on_enter_time)
@@ -82,9 +94,12 @@ class InstructionEntryMenu(Menu):
 		self.defaults_button.bind(on_press = self.on_defaults)
 		self.confirm_button = Button(text = 'Confirm')
 		self.confirm_button.bind(on_press = self.on_confirm)
+		self.stop_button = Button(text='Stop Cooking')
+		self.stop_button.bind(on_press=self.stop_cooking)
 
 		self.navigation_layout.add_widget(self.back_button)
 		self.navigation_layout.add_widget(self.settings_button)
+		self.navigation_layout.add_widget(self.stop_button)
 		self.navigation_layout.add_widget(self.chosen_settings)
 		self.navigation_layout.add_widget(self.confirm_button)
 		self.navigation_layout.add_widget(self.defaults_button)
@@ -111,16 +126,32 @@ class InstructionEntryMenu(Menu):
 	def on_settings(self, instance):
 		self.switch_to_child('menu')
 
+
 	def on_confirm(self, instance):
+		#self.switch_to_child('Cook')
+
 		code = 'Confirm' + ' '
 		placeholder = '0'
 		confirm_info = code + placeholder
-		self.send(s, confirm_info)
+		Menu.send(self, s, confirm_info)
+		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
 		''' Send chosen parameters to microcontroller'''
-		# while True:
-		# 	Menu.recv(self, s)
-		self.switch_to_child('Cook')
 
+	def recv_clock(self, c, event):
+		''' Receive data from pi (such as remaining time or current temperature '''
+		data = c.recv(12345).decode()
+		self.update_time_left(data, event)
+
+	def update_time_left(self, data, event):
+		cancel_data = data.split(' ', 1)
+		if data == 'Done!' or data == 'Cooking Cancelled' or data == 'Stop':
+			self.time_output.text = data
+			event.cancel()
+		elif cancel_data[1] == 'Cooking Cancelled' or cancel_data[1] == ' Cooking Cancelled':
+			self.time_output.text = cancel_data[1]
+			event.cancel()
+		else:
+			self.time_output.text = Menu.to_minsec(self, data)
 
 	''' Text Field Callbacks '''
 	def on_text_time(self, instance, text):
@@ -149,7 +180,7 @@ class InstructionEntryMenu(Menu):
 		code = 'Time' + ' '
 		c_time = str(self.cook_time)
 		time_info = code + c_time
-		self.send(s, time_info)
+		Menu.send(self, s, time_info)
 
 	def on_text_temp(self, instance, text):
 		if text.isdigit() or not text:
@@ -164,6 +195,7 @@ class InstructionEntryMenu(Menu):
 		code = 'Temp' + ' '
 		c_temp = str(self.cook_temp)
 		temp_info = code + c_temp
-		self.send(s, temp_info)
+		Menu.send(self, s, temp_info)
 
-
+	def stop_cooking(self, instance):
+		Menu.send(self, s, 'Stop')
