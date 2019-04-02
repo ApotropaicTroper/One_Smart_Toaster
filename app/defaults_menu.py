@@ -84,6 +84,7 @@ class DefaultsMenu(Menu):
 			if 'Default' in p:
 				self.index_default = i
 				self.on_pick(self.labels[i])
+				break
 
 	def on_pick(self, instance):
 		''' User chose a preset in the scrollable list '''
@@ -112,8 +113,9 @@ class DefaultsMenu(Menu):
 	def set_default(self, instance):
 		''' User wishes to set a preset as default '''
 		self.pick_default = True
+		# remove 'Default' label from presets list
 		if self.index_default is not None:
-			self.presets[self.index_default] = self.presets[self.index_default][:-1]
+			self.presets[self.index_default] = self.presets[self.index_default][:3]
 
 	def on_new_preset(self, instance):
 		''' User is going to add a new preset '''
@@ -140,9 +142,8 @@ class DefaultsMenu(Menu):
 		text = '\n'.join(check_text)
 		instance.text = text
 		if len(check_text) > 3:
-			instance.text = '\n'.join(check_text[:3])
-			if all(line for line in check_text):
-				self.on_set_preset(text)
+			if all(line for line in instance.text):
+				self.on_set_preset(instance.text)
 				self.scroll_list.remove_widget(instance)
 
 	def on_set_preset(self, text):
