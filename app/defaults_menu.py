@@ -151,6 +151,7 @@ class DefaultsMenu(Menu):
 		settings = text.strip().split('\n')
 		name, time, temp = settings
 		self.labels.append(Button(text=name,size_hint_y=None,height=50))
+		self.labels[-1].bind(on_press = self.on_pick)
 		self.readouts.append(Label(text='{}\n{}° '.format(time, temp), size_hint_y=None, height=50))
 		self.presets.append([name, str(self.to_sec(time)), temp])
 
@@ -161,6 +162,8 @@ class DefaultsMenu(Menu):
 	def on_confirm(self, instance):
 		if self.pick_default:
 			self.pick_default = False
+			if self.index_default is None:
+				return
 			self.presets[self.index_default].append('Default')
 		else:
 			if self.chosen_settings.text != '':
