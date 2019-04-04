@@ -97,9 +97,6 @@ class DefaultsMenu(Menu):
 	def on_leave(self):
 		''' Save Presets '''
 		self.pick_default = False
-		self.scroll_list.remove_widget(self.new_settings)
-		self.new_settings.text = ''
-		self.scroll_list.add_widget(self.new)
 
 		with open('presets.txt', mode='w') as f:
 			for i,p in enumerate(self.presets):
@@ -110,6 +107,7 @@ class DefaultsMenu(Menu):
 			self.scroll_list.remove_widget(l)
 			self.scroll_list.remove_widget(r)
 		self.scroll_list.remove_widget(self.new)
+		self.scroll_list.remove_widget(self.new_settings)
 		del self.labels
 		del self.readouts
 
@@ -125,6 +123,7 @@ class DefaultsMenu(Menu):
 
 	def on_new_preset(self, instance):
 		''' User is going to add a new preset '''
+		self.pick_default = False
 		self.scroll_list.remove_widget(self.new)
 		self.new_settings.text = ''
 		self.scroll_list.add_widget(self.new_settings)
