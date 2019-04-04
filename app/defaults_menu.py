@@ -92,9 +92,15 @@ class DefaultsMenu(Menu):
 		self.chosen_settings.text = self.readouts[self.chosen_index].text
 		if self.pick_default:
 			self.index_default = self.chosen_index
+			print(self.index_default)
 
 	def on_leave(self):
 		''' Save Presets '''
+		self.pick_default = False
+		self.scroll_list.remove_widget(self.new_settings)
+		self.new_settings.text = ''
+		self.scroll_list.add_widget(self.new)
+
 		with open('presets.txt', mode='w') as f:
 			for i,p in enumerate(self.presets):
 				f.write(self.delimeter.join(p))
