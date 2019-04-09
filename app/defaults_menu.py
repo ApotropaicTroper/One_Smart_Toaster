@@ -36,7 +36,6 @@ class DefaultsMenu(Menu):
 		self.new = Button(text='New Preset', size_hint_y=None, height=50)
 		self.new.bind(on_press = self.on_new_preset)
 		self.new_settings = TextInput(text='', hint_text='Name\nTime\nTemperature', size_hint_y=None, height=70)
-		self.new_settings.bind(on_press = self.on_set_preset)
 		self.new_settings.bind(text = self.on_text)
 
 		''' Containing widget for user navigation '''
@@ -92,7 +91,6 @@ class DefaultsMenu(Menu):
 		self.chosen_settings.text = self.readouts[self.chosen_index].text
 		if self.pick_default:
 			self.index_default = self.chosen_index
-			print(self.index_default)
 
 	def on_leave(self):
 		''' Save Presets '''
@@ -127,6 +125,7 @@ class DefaultsMenu(Menu):
 		self.scroll_list.remove_widget(self.new)
 		self.new_settings.text = ''
 		self.scroll_list.add_widget(self.new_settings)
+		self.preset_set = False
 
 	def on_text(self, instance, text):
 		''' User is editing presets '''
@@ -144,12 +143,10 @@ class DefaultsMenu(Menu):
 			text = check_text[2]
 			text = ''.join(c for c in text if c.isdigit())
 			check_text[2] = text
-		text = '\n'.join(check_text)
-		instance.text = text
-		if len(check_text) > 3:
-			if all(line for line in instance.text):
-				self.on_set_preset(instance.text)
-				self.scroll_list.remove_widget(instance)
+		instance.text = '\n'.join(check_text)
+		if len(check_text) > 3 and not self.preset_set:
+			self.on_set_preset(instance.text)
+			self.scroll_list.remove_widget(instance)
 
 	def on_set_preset(self, text):
 		''' Add a new preset '''
@@ -163,6 +160,7 @@ class DefaultsMenu(Menu):
 		self.scroll_list.add_widget(self.labels[-1])
 		self.scroll_list.add_widget(self.readouts[-1])
 		self.scroll_list.add_widget(self.new)
+		self.preset_set = True
 
 	def on_confirm(self, instance):
 		if self.pick_default:
