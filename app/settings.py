@@ -1,11 +1,12 @@
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-import subprocess
-import socket
 from kivy.uix.button import Button
 from kivy.uix.button import Label
 from kivy.uix.boxlayout import BoxLayout
+
+import subprocess
+import socket
 
 from manager import Menu
 
