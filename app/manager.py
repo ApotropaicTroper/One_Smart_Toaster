@@ -64,10 +64,13 @@ class Menu(Screen):
 	def to_sec(self, minsec):
 		''' format minutes:seconds as seconds '''
 		*minutes, seconds = minsec.split(':')
-
 		if not minutes:
 			return int(seconds)
 		return int(minutes[0])*60 + int(seconds)
+
+	def just_digits(self, string):
+		''' Remove anything that isn't a digit '''
+		return ''.join(c for c in string if c.isdigit())
 
 class RootMenu(Menu):
 	''' Welcome/start menu '''

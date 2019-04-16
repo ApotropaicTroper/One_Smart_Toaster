@@ -1,5 +1,4 @@
 import kivy
-import socket
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -50,26 +49,26 @@ class InstructionMenu(Menu):
 		self.entry_layout = FloatLayout(size_hint=(1,.9), pos_hint={'x':0,'y':.1})
 		self.base_layout.add_widget(self.entry_layout)
 
-		self.entry_layout.add_widget(Label(text='Timer:', size_hint=(.5,None), height=30, pos_hint={'x':0,'y':.8}))
-		self.time_input = TextInput(text='', hint_text='00:00', multiline=False, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.8})
+		self.entry_layout.add_widget(Label(text='Timer:', size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':0,'y':.8}))
+		self.time_input = TextInput(text='', hint_text='00:00', multiline=False, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.5,'y':.8})
 		self.entry_layout.add_widget(self.time_input)
-		self.time_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.7})
+		self.time_input_error = Label(text='', markup=True, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.25,'y':.7})
 		self.entry_layout.add_widget(self.time_input_error)
 
 
-		self.entry_layout.add_widget(Label(text='Temperature:', size_hint=(.5,None), height=30, pos_hint={'x':0,'y':.6}))
-		self.temp_input = TextInput(text='', hint_text='', multiline=False, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.6})
+		self.entry_layout.add_widget(Label(text='Temperature:', size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':0,'y':.6}))
+		self.temp_input = TextInput(text='', hint_text='', multiline=False, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.5,'y':.6})
 		self.entry_layout.add_widget(self.temp_input)
-		self.temp_input_error = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.25,'y':.5})
+		self.temp_input_error = Label(text='', markup=True, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.25,'y':.5})
 		self.entry_layout.add_widget(self.temp_input_error)
 
 
-		self.entry_layout.add_widget(Label(text='Time Remaining:', size_hint=(.5, None), height=30, pos_hint={'x': 0, 'y': .4}))
-		self.time_output = Label(text='', markup=True, size_hint=(.5,None), height=30, pos_hint={'x':.5,'y':.4})
+		self.entry_layout.add_widget(Label(text='Time Remaining:', size_hint=(.5, None), height=self.size[1]//30, pos_hint={'x': 0, 'y': .4}))
+		self.time_output = Label(text='', markup=True, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.5,'y':.4})
 		self.entry_layout.add_widget(self.time_output)
 
-		self.entry_layout.add_widget(Label(text='Toaster Temperature:', size_hint=(.5, None), height=30, pos_hint={'x': 0, 'y': .2}))
-		self.temp_output = Label(text='', markup=True, size_hint=(.5, None), height=30, pos_hint={'x': .5, 'y': .2})
+		self.entry_layout.add_widget(Label(text='Toaster Temperature:', size_hint=(.5, None), height=self.size[1]//30, pos_hint={'x': 0, 'y': .2}))
+		self.temp_output = Label(text='', markup=True, size_hint=(.5, None), height=self.size[1]//30, pos_hint={'x': .5, 'y': .2})
 		self.entry_layout.add_widget(self.temp_output)
 
 

@@ -9,6 +9,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
+
 from functools import partial
 
 from manager import Menu
@@ -27,15 +28,16 @@ class DefaultsMenu(Menu):
 		self.add_widget(self.base_layout)
 
 		''' Scrollable list of presets '''
-		self.scroll_container = ScrollView(size_hint = (1, None), size=(Window.width, Window.height*.9),pos_hint={'x':0,'y':.1})
+		self.scroll_container = ScrollView(size_hint = (1, None), size=(self.size[0], self.size[1]*.9),pos_hint={'x':0,'y':.1})
 		self.base_layout.add_widget(self.scroll_container)
 		self.scroll_list = GridLayout(cols=2, size_hint=(1,None))
 		self.scroll_container.add_widget(self.scroll_list)
 		self.scroll_list.bind(minimum_height=self.scroll_list.setter('height'))
 
-		self.new = Button(text='New Preset', size_hint_y=None, height=50)
+		self.new = Button(text='New Preset', size_hint_y=None, height=self.size[1]//12)
 		self.new.bind(on_press = self.on_new_preset)
-		self.new_settings = TextInput(text='', hint_text='Name\nTime\nTemperature', size_hint_y=None, height=70)
+		self.new_settings = TextInput(text='', hint_text='Name\nTime\nTemperature (Celsius)', size_hint_y=None, height=self.size[1]//10)
+		self.new_settings.bind(text = self.on_text)
 		self.new_settings.bind(text = self.on_text)
 
 		''' Containing widget for user navigation '''
@@ -77,10 +79,10 @@ class DefaultsMenu(Menu):
 		self.names = [p[0] for p in self.presets]
 		self.times = [p[1] for p in self.presets]
 		self.temperatures = [p[2] for p in self.presets]
-		self.labels = [Button(text=n, size_hint_y=None, height=50) for n in self.names]
+		self.labels = [Button(text=n, size_hint_y=None, height=self.size[1]//12) for n in self.names]
 		for b in self.labels:
 			b.bind(on_press = self.on_pick)
-		self.readouts = [Label(text='{}\n{}° '.format(self.to_minsec(time), temp), size_hint_y=None, height=50) for name, time, temp in zip(self.names, self.times, self.temperatures)]
+		self.readouts = [Label(text='{}\n{}° '.format(self.to_minsec(time), temp), size_hint_y=None, height=self.size[1]//12) for name, time, temp in zip(self.names, self.times, self.temperatures)]
 
 		for name, data in zip(self.labels, self.readouts):
 			self.scroll_list.add_widget(name)
@@ -116,9 +118,6 @@ class DefaultsMenu(Menu):
 		del self.labels
 		del self.readouts
 
-	def update_cursor(self, instance, dt):
-		instance.cursor = len(instance.text.split('\n')[1]), 1
-
 	def set_default(self, instance):
 		''' User wishes to set a preset as default '''
 		self.pick_default = True
@@ -132,42 +131,37 @@ class DefaultsMenu(Menu):
 		self.scroll_list.remove_widget(self.new)
 		self.new_settings.text = ''
 		self.scroll_list.add_widget(self.new_settings)
-		self.preset_set = False
 
 	def on_text(self, instance, text):
 		''' User is editing presets '''
 		check_text = text.split('\n')
-
+		cursor_col, cursor_line = instance.cursor
 		if len(check_text) > 1:
-			text = check_text[1]
-			text = ''.join(c for c in text if c.isdigit())
-			if len(text) > 2:
-				text = ':'.join((text[:-2], text[-2:]))
-			check_text[1] = text
-			if len(check_text) == 2:
-				Clock.schedule_once(partial(self.update_cursor, instance), 0)
-		if len(check_text) > 2:
-			text = check_text[2]
-			text = ''.join(c for c in text if c.isdigit())
-			check_text[2] = text
+			check_text[1] = self.just_digits(check_text[1])[-4:]
+		elif cursor_line == 2 < len(check_text):
+			check_text[2] = self.just_digits(check_text[2])
+		if len(check_text) == 4:
+			del check_text[cursor_line+1]
+			if all(line for line in check_text):
+				self.on_set_preset('\n'.join(check_text))
+				self.scroll_list.remove_widget(instance)
+				return
 		instance.text = '\n'.join(check_text)
-		if len(check_text) > 3 and not self.preset_set:
-			self.on_set_preset(instance.text)
-			self.scroll_list.remove_widget(instance)
 
 	def on_set_preset(self, text):
 		''' Add a new preset '''
 		settings = text.strip().split('\n')
 		name, time, temp = settings
-		self.labels.append(Button(text=name,size_hint_y=None,height=50))
+		if len(time) > 2:
+			time = ':'.join((time[:-2], time[-2:]))
+		self.labels.append(Button(text=name,size_hint_y=None,height=self.size[1]//12))
 		self.labels[-1].bind(on_press = self.on_pick)
-		self.readouts.append(Label(text='{}\n{}° '.format(time, temp), size_hint_y=None, height=50))
+		self.readouts.append(Label(text='{}\n{}° '.format(time, temp), size_hint_y=None, height=self.size[1]//12))
 		self.presets.append([name, str(self.to_sec(time)), temp])
 
 		self.scroll_list.add_widget(self.labels[-1])
 		self.scroll_list.add_widget(self.readouts[-1])
 		self.scroll_list.add_widget(self.new)
-		self.preset_set = True
 
 	def on_confirm(self, instance):
 		if self.pick_default:
