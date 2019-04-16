@@ -2,11 +2,10 @@ import kivy
 from kivy.utils import escape_markup
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.uix.label import Label
+from kivy.core.window import Window
 from kivy.clock import Clock
 
 import socket
-
-#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
 
 
 
@@ -16,7 +15,7 @@ class Menu(Screen):
 
 	# static variable; all Menu objects access the same ScreenManager
 	_sm = ScreenManager()
-	size = (800,600)
+	size = Window.size
 
 	# static, read-only variable
 	@property

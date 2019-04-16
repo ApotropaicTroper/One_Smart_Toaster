@@ -92,7 +92,7 @@ class InstructionMenu(Menu):
 		self.defaults_button.bind(on_press = self.on_defaults)
 		self.confirm_button = Button(text = 'Confirm')
 		self.confirm_button.bind(on_press = self.on_confirm)
-		self.stop_button = Button(text='Stop Cooking')
+		self.stop_button = Button(text='Stop\nCooking')
 		self.stop_button.bind(on_press=self.stop_cooking)
 
 		self.navigation_layout.add_widget(self.back_button)
@@ -126,14 +126,12 @@ class InstructionMenu(Menu):
 
 
 	def on_confirm(self, instance):
-		#self.switch_to_child('Cook')
-
+		''' Send chosen parameters to microcontroller'''
 		code = 'Confirm' + ' '
 		placeholder = '0'
 		confirm_info = code + placeholder
 		Menu.send(self, s, confirm_info)
 		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
-		''' Send chosen parameters to microcontroller'''
 
 	def recv_clock(self, c, event):
 		''' Receive data from pi (such as remaining time or current temperature '''
