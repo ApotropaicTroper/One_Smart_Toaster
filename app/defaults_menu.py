@@ -65,8 +65,15 @@ class DefaultsMenu(Menu):
 	''' Callbacks '''
 	def on_pre_enter(self):
 		''' Load Presets '''
-		with open('presets.txt', mode='r') as f:
-			self.presets = [p.strip().split(self.delimeter) for p in f]
+		try:
+			with open('presets.txt', mode='r') as f:
+				self.presets = [p.strip().split(self.delimeter) for p in f]
+		except FileNotFoundError:
+			open('presets.txt', mode='x').close()
+			self.presets = []
+		except IOError:
+			open('presets.txt', mode='xx').close()
+			self.presets = []
 		self.names = [p[0] for p in self.presets]
 		self.times = [p[1] for p in self.presets]
 		self.temperatures = [p[2] for p in self.presets]
