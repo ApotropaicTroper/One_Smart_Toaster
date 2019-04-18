@@ -130,6 +130,7 @@ class InstructionMenu(Menu):
 		placeholder = '0'
 		confirm_info = code + placeholder
 		Menu.send(self, s, confirm_info)
+
 		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
 
 	def recv_clock(self, c, event):
@@ -150,17 +151,11 @@ class InstructionMenu(Menu):
 
 	''' Text Field Callbacks '''
 	def on_text_time(self, instance, text):
-		if ':' in text:
+		# only allow digits and ':' 
+		text = self.just_digits(text, True)[-5:]
+		if len(text) > 2 and text[-3] != ':':
 			text = ''.join(text.split(':'))
-		# is the text field empty? Then don't give error message
-		if text.isdigit() or not text:
-			self.time_input_error.text = ''
-		else:
-			self.time_input_error.text = '[color=#FF0000]Not a number[/color]'
-		if len(text) > 4:
-			self.time_input_error.text = '[color=#FF0000]Too long[/color]'
-		if len(text) > 2:
-			text = ':'.join((text[:-2],text[-2:]))
+			text = ':'.join((text[:-2], text[-2:]))
 		instance.text = text
 
 	def on_enter_time(self, instance):
@@ -178,10 +173,7 @@ class InstructionMenu(Menu):
 		Menu.send(self, s, time_info)
 
 	def on_text_temp(self, instance, text):
-		if text.isdigit() or not text:
-			self.temp_input_error.text = ''
-		else:
-			self.temp_input_error.text = '[color=#FF0000]Not a number[/color]'
+		instance.text = self.just_digits(text, False)
 
 	def on_enter_temp(self, instance):
 		if self.temp_input_error.text or not instance.text:
