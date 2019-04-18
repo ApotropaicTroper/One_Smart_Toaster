@@ -45,13 +45,23 @@ class Menu(Screen):
 		self.switch_to_parent()
 
 	def send(self, s, message):
-		''' Send message string to pi '''
+		''' Send message string to pi 
+		Error codes:
+			0: no error
+			1: socket error
+			2: OSError
+		'''
 		try:
 			s.send(message.encode('utf-8'))
 		except socket.error:
 			print("An error has occurred... couldn't send data")
+			return 1
 		except OSError:
 			print("An error has occurred... couldn't send data")
+			return 2
+		else:
+			return 0
+
 
 	def recv(self, c):
 		''' Receive data from pi (such as remaining time or current temperature '''

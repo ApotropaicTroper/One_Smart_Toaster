@@ -126,12 +126,15 @@ class InstructionMenu(Menu):
 
 	def on_confirm(self, instance):
 		''' Send chosen parameters to microcontroller'''
+		self.temp_input_error.text = ''
 		code = 'Confirm' + ' '
 		placeholder = '0'
 		confirm_info = code + placeholder
-		Menu.send(self, s, confirm_info)
-
-		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
+		connected = self.send(s, confirm_info)
+		if connected == 0:
+			event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
+		else:
+			self.temp_input_error.text = 'Could not connect to device'
 
 	def recv_clock(self, c, event):
 		''' Receive data from pi (such as remaining time or current temperature '''
@@ -148,7 +151,7 @@ class InstructionMenu(Menu):
 			self.time_output.text = cancel_data[1]
 			event.cancel()
 		else:
-			self.time_output.text = Menu.to_minsec(self, data)
+			self.time_output.text = self.to_minsec(data)
 
 	''' Text Field Callbacks '''
 	def on_text_time(self, instance, text):
@@ -168,7 +171,7 @@ class InstructionMenu(Menu):
 		code = 'Time' + ' '
 		c_time = str(self.cook_time)
 		time_info = code + c_time
-		Menu.send(self, s, time_info)
+		self.send(s, time_info)
 
 	def on_text_temp(self, instance, text):
 		instance.text = self.just_digits(text, False)[-3:]
@@ -178,7 +181,7 @@ class InstructionMenu(Menu):
 		code = 'Temp' + ' '
 		c_temp = str(self.cook_temp)
 		temp_info = code + c_temp
-		Menu.send(self, s, temp_info)
+		self.send(s, temp_info)
 
 	def stop_cooking(self, instance):
-		Menu.send(self, s, 'Stop')
+		self.send(s, 'Stop')
