@@ -55,8 +55,12 @@ class Menu(Screen):
 
 	def recv(self, c):
 		''' Receive data from pi (such as remaining time or current temperature '''
-		data = c.recv(12345).decode()
-		return data
+		try:
+			data = c.recv(12345).decode()
+		except OSError:
+			print("An error has occurred... couldn't receive data")
+		else:
+			return data
 
 	def to_minsec(self, seconds):
 		''' format seconds as minutes:seconds '''

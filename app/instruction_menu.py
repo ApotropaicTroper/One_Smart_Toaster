@@ -135,8 +135,9 @@ class InstructionMenu(Menu):
 
 	def recv_clock(self, c, event):
 		''' Receive data from pi (such as remaining time or current temperature '''
-		data = c.recv(12345).decode()
-		self.update_time_left(data, event)
+		data = self.recv(c)
+		if data:
+			self.update_time_left(data, event)
 
 	def update_time_left(self, data, event):
 		cancel_data = data.split(' ', 1)
