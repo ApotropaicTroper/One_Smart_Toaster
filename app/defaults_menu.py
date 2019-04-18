@@ -137,9 +137,13 @@ class DefaultsMenu(Menu):
 		check_text = text.split('\n')
 		cursor_col, cursor_line = instance.cursor
 		if len(check_text) > 1:
-			check_text[1] = self.just_digits(check_text[1])[-4:]
+			text[1] = self.just_digits(check_text[1], True)[-5:]
+			if len(text) > 2 and text[-3] != ':':
+				text = ''.join(text.split(':'))
+				text = ':'.join((text[:-2], text[-2:]))
+			check_text[1] = text
 		elif cursor_line == 2 < len(check_text):
-			check_text[2] = self.just_digits(check_text[2])
+			check_text[2] = self.just_digits(check_text[2], False)
 		if len(check_text) == 4:
 			del check_text[cursor_line+1]
 			if all(line for line in check_text):
