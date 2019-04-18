@@ -61,6 +61,7 @@ class DefaultsMenu(Menu):
 
 		self.pick_default = False
 		self.index_default = None
+		self.time_capped = False # value used to manage text callback in text callback
 
 
 
@@ -132,16 +133,42 @@ class DefaultsMenu(Menu):
 		self.new_settings.text = ''
 		self.scroll_list.add_widget(self.new_settings)
 
+	def cursor_update_insert(self, instance, old_cursor, capped, dt):
+		''' Move cursor position when colon added to input '''
+		old, old_line = old_cursor
+		new, new_line = instance.cursor
+
+
+		if old_line != 1:
+			return
+		if old_line != new_line:
+			return
+		check_text = instance.text.split('\n')
+
+		text = check_text[1]
+
+		if len(text) == 2 and old == 3 and new == 2:
+			instance.cursor = new-1, new_line
+		elif len(text) == 4 and old == 2 and new == 3:
+			instance.cursor = new+1, new_line
+		elif len(text) == 5:
+			instance.cursor = old if capped else new, new_line
+
+
+
+
 	def on_text(self, instance, text):
 		''' User is editing presets '''
 		check_text = text.split('\n')
 		cursor_col, cursor_line = instance.cursor
 		if len(check_text) > 1:
-			text = self.just_digits(check_text[1], True)[-5:]
-			if len(text) > 2 and text[-3] != ':':
-				text = ''.join(text.split(':'))
+			if not self.time_capped:
+				self.time_capped = len(check_text[1]) > 5
+			text = self.just_digits(check_text[1], False)[-4:]
+			if len(text) > 2:
 				text = ':'.join((text[:-2], text[-2:]))
 			check_text[1] = text
+			Clock.schedule_once(partial(self.cursor_update_insert, instance, instance.cursor, self.time_capped))
 		if len(check_text) > 2:
 			check_text[2] = self.just_digits(check_text[2], False)[-3:]
 		if len(check_text) == 4:
@@ -151,6 +178,7 @@ class DefaultsMenu(Menu):
 				self.scroll_list.remove_widget(instance)
 				return
 		instance.text = '\n'.join(check_text)
+		self.time_capped = False
 
 	def on_set_preset(self, text):
 		''' Add a new preset '''
