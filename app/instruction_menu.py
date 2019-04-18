@@ -159,9 +159,6 @@ class InstructionMenu(Menu):
 		instance.text = text
 
 	def on_enter_time(self, instance):
-		# don't confirm entry unless no error message is present
-		if self.time_input_error.text:
-			return
 		if ':' in instance.text:
 			time = self.to_sec(instance.text)
 		else:
@@ -176,8 +173,6 @@ class InstructionMenu(Menu):
 		instance.text = self.just_digits(text, False)
 
 	def on_enter_temp(self, instance):
-		if self.temp_input_error.text or not instance.text:
-			return
 		self.cook_temp = int(instance.text)
 		code = 'Temp' + ' '
 		c_temp = str(self.cook_temp)
