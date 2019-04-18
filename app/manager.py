@@ -50,6 +50,8 @@ class Menu(Screen):
 			s.send(message.encode('utf-8'))
 		except socket.error:
 			print("An error has occurred... couldn't send data")
+		except OSError:
+			print("An error has occurred... couldn't send data")
 
 	def recv(self, c):
 		''' Receive data from pi (such as remaining time or current temperature '''
@@ -68,9 +70,12 @@ class Menu(Screen):
 			return int(seconds)
 		return int(minutes[0])*60 + int(seconds)
 
-	def just_digits(self, string):
+	def just_digits(self, string, include_colon=False):
 		''' Remove anything that isn't a digit '''
-		return ''.join(c for c in string if c.isdigit())
+		if include_colon:
+			return ''.join(c for c in string if c in ':0123456789')
+		else:
+			return ''.join(c for c in string if c in '0123456789')
 
 class RootMenu(Menu):
 	''' Welcome/start menu '''
