@@ -6,6 +6,8 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
 
+from functools import partial
+
 from manager import Menu
 from defaults_menu import DefaultsMenu
 from settings import MenuScreen, SettingsScreen, NetworksScreen, s
@@ -101,6 +103,7 @@ class InstructionMenu(Menu):
 		self.navigation_layout.add_widget(self.confirm_button)
 		self.navigation_layout.add_widget(self.defaults_button)
 
+		self.time_capped = False
 		self.get_default()
 
 	def get_default(self):
@@ -154,12 +157,28 @@ class InstructionMenu(Menu):
 			self.time_output.text = self.to_minsec(data)
 
 	''' Text Field Callbacks '''
+	def cursor_update_insert(self, instance, old_cursor, capped, dt):
+		''' Move cursor position when colon added to input '''
+		old = old_cursor[0]
+		new = instance.cursor[0]
+
+		text = instance.text
+
+		if len(text) == 2 and old == 3 and new == 2:
+			instance.cursor = new-1, 0
+		elif len(text) == 4 and old == 2 and new == 3:
+			instance.cursor = new+1, 0
+		elif len(text) == 5:
+			instance.cursor = old if capped else new, 0
+
+
 	def on_text_time(self, instance, text):
-		# only allow digits and ':' 
-		text = self.just_digits(text, True)[-5:]
-		if len(text) > 2 and text[-3] != ':':
-			text = ''.join(text.split(':'))
+		if not self.time_capped:
+			self.time_capped = len(text) > 5
+		text = self.just_digits(text, False)[-4:]
+		if len(text) > 2:
 			text = ':'.join((text[:-2], text[-2:]))
+		Clock.schedule_once(partial(self.cursor_update_insert, instance, instance.cursor, self.time_capped))
 		instance.text = text
 
 	def on_enter_time(self, instance):
