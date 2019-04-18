@@ -138,7 +138,6 @@ class DefaultsMenu(Menu):
 		old, old_line = old_cursor
 		new, new_line = instance.cursor
 
-
 		if old_line != 1:
 			return
 		if old_line != new_line:
@@ -153,9 +152,6 @@ class DefaultsMenu(Menu):
 			instance.cursor = new+1, new_line
 		elif len(text) == 5:
 			instance.cursor = old if capped else new, new_line
-
-
-
 
 	def on_text(self, instance, text):
 		''' User is editing presets '''
