@@ -170,7 +170,7 @@ class InstructionMenu(Menu):
 		Menu.send(self, s, time_info)
 
 	def on_text_temp(self, instance, text):
-		instance.text = self.just_digits(text, False)
+		instance.text = self.just_digits(text, False)[-3:]
 
 	def on_enter_temp(self, instance):
 		self.cook_temp = int(instance.text)
