@@ -130,6 +130,14 @@ class InstructionMenu(Menu):
 	def on_confirm(self, instance):
 		''' Send chosen parameters to microcontroller'''
 		self.temp_input_error.text = ''
+		print(repr(self.time_input.text))
+		print(repr(self.temp_input.text))
+		if not self.time_input.text:
+			self.temp_input_error.text = 'Undefined cooking time'
+			return
+		if not self.temp_input.text:
+			self.temp_input_error.text = 'Undefined cooking temperature'
+			return
 		code = 'Confirm' + ' '
 		placeholder = '0'
 		confirm_info = code + placeholder
@@ -137,7 +145,7 @@ class InstructionMenu(Menu):
 		if connected == 0:
 			event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
 		else:
-			self.temp_input_error.text = 'Could not connect to device'
+			self.temp_input_error.text = 'Couldn\'t connect to device'
 
 	def recv_clock(self, c, event):
 		''' Receive data from pi (such as remaining time or current temperature '''
