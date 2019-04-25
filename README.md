@@ -8,9 +8,9 @@ by:
  - William Mayo
 
 To build the app:
- Install kivy and buildozer
- cd to the app folder
- build and deploy with: buildozer -v android debug deploy run logcat
+ - Install kivy and buildozer
+ - cd to the app folder
+ - build and deploy with: buildozer -v android debug deploy run logcat
 
 
 Object naming convention:
