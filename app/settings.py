@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.button import Button
 from kivy.uix.button import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import ObjectProperty, StringProperty
 
 import subprocess
 import socket
@@ -12,6 +13,9 @@ from manager import Menu
 
 ssids = []
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+host = '192.168.1.89'  # Raspberry Pi ip
+# host = '10.16.2.156'
+port = 12345  # Reserve a port for your service.
 
 # Declare both screens
 class MenuScreen(Menu):
@@ -48,6 +52,10 @@ class SettingsScreen(Menu):
         scan_button = Button(text='Scan For Networks')
         vLayout.add_widget(scan_button)
         scan_button.bind(on_press=self.to_networks)
+        #disconnect_button = Button(text='Disconnect WiFi')
+        #vLayout.add_widget(disconnect_button)
+        # back_button.bind(on_press=self.remove_widget(vLayout))
+        # disconnect_button.bind(on_press=self.disconnectFunction)
         back_button = Button(text='Back Home')
         vLayout.add_widget(back_button)
         back_button.bind(on_press=self.backFunction)
@@ -55,6 +63,15 @@ class SettingsScreen(Menu):
     def to_networks(self, next_screen):
         self.scan()
         self.switch_to_child('networks')
+
+    def disconnectFunction(self, next_screen):
+        code = 'Disconnect' + ' '
+        placeholder = '0'
+        disconnect_info = code + placeholder
+        try:
+            Menu.send(self, s, disconnect_info)
+        except socket.error:
+            print("Disconnected from server.")
 
     def backFunction(self, next_screen):
         self.switch_to_parent()
@@ -78,48 +95,54 @@ class SettingsScreen(Menu):
 
         print(ssids)
         s2 = self.manager.get_screen('networks')
-        s2.printButtons()
+        s2.printButtons(True)
         # p = NetworksScreen.printButtons(self)
 
 
 
 class NetworksScreen(Menu):
 
-    delete_layout = False
-
     def __init__(self, **kwargs):
         super(Menu, self).__init__(**kwargs)
 
-
     def backFunction(self, next_screen):
-        self.printButtons()
+        self.printButtons(False)
         self.switch_to_parent()
 
     def connectWifi(self):
-        host = '192.168.1.89'  #Raspberry Pi ip
-        port = 12345  # Reserve a port for your service.
-
         try:
             s.connect((host, port))
             print(s.recv(1024))
         except socket.error:
             print("An error has occurred... closing connection to server")
+            s.close()
         finally:
             print("")
             #s.shutdown(socket.SHUT_RDWR)
             #s.close()
 
 
-    def printButtons(self):
-        y = 0
+    def printButtons(self, trigger):
         vLayout = BoxLayout(orientation='vertical')
         self.add_widget(vLayout)
-        while y < len(ssids) - 1:
-            button = Button(text=ssids[y])
-            button.bind(on_press=NetworksScreen.connectWifi)
-            vLayout.add_widget(button)
-            y += 1
+        if trigger == True:
+            y = 0
+            while y < len(ssids) - 1:
+                self.button = Button(text=ssids[y])
+                self.button.bind(on_press=NetworksScreen.connectWifi)
+                vLayout.add_widget(self.button)
+                y += 1
 
-        back_button = Button(text='Back Home')
-        vLayout.add_widget(back_button)
-        back_button.bind(on_press=self.backFunction)
+            self.back_button = Button(text='Back Home')
+            vLayout.add_widget(self.back_button)
+            # back_button.bind(on_press=self.remove_widget(vLayout))
+            self.back_button.bind(on_press=self.backFunction)
+
+        elif trigger == False:
+            self.remove_widget(self.button)
+            self.remove_widget(self.back_button)
+            ssids.clear()
+
+
+
+
