@@ -1,4 +1,5 @@
 import kivy
+import socket
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -47,32 +48,39 @@ class InstructionMenu(Menu):
 		self.base_layout = FloatLayout(size=self.size)
 		self.add_widget(self.base_layout)
 
-		''' Containing widget for user input '''
-		self.entry_layout = FloatLayout(size_hint=(1,.9), pos_hint={'x':0,'y':.1})
+		''' Containing widget for this menu '''
+		self.entry_layout = FloatLayout(size_hint=(1, .9), pos_hint={'x': 0, 'y': .1})
 		self.base_layout.add_widget(self.entry_layout)
 
-		self.entry_layout.add_widget(Label(text='Timer:', size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':0,'y':.8}))
-		self.time_input = TextInput(text='', hint_text='00:00', multiline=False, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.5,'y':.8})
+		self.entry_layout.add_widget(
+			Label(text='Timer:', size_hint=(.5, None), height=self.size[1] // 30, pos_hint={'x': 0, 'y': .8}))
+		self.time_input = TextInput(text='', hint_text='00:00', multiline=False, size_hint=(.5, None),
+									height=self.size[1] // 30, pos_hint={'x': .5, 'y': .8})
 		self.entry_layout.add_widget(self.time_input)
-		self.time_input_error = Label(text='', markup=True, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.25,'y':.7})
+		self.time_input_error = Label(text='', markup=True, size_hint=(.5, None), height=self.size[1] // 30,
+									  pos_hint={'x': .25, 'y': .7})
 		self.entry_layout.add_widget(self.time_input_error)
 
-
-		self.entry_layout.add_widget(Label(text='Temperature:', size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':0,'y':.6}))
-		self.temp_input = TextInput(text='', hint_text='', multiline=False, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.5,'y':.6})
+		self.entry_layout.add_widget(
+			Label(text='Temperature:', size_hint=(.5, None), height=self.size[1] // 30, pos_hint={'x': 0, 'y': .6}))
+		self.temp_input = TextInput(text='', hint_text='', multiline=False, size_hint=(.5, None),
+									height=self.size[1] // 30, pos_hint={'x': .5, 'y': .6})
 		self.entry_layout.add_widget(self.temp_input)
-		self.temp_input_error = Label(text='', markup=True, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.25,'y':.5})
+		self.temp_input_error = Label(text='', markup=True, size_hint=(.5, None), height=self.size[1] // 30,
+									  pos_hint={'x': .25, 'y': .5})
 		self.entry_layout.add_widget(self.temp_input_error)
 
-
-		self.entry_layout.add_widget(Label(text='Time Remaining:', size_hint=(.5, None), height=self.size[1]//30, pos_hint={'x': 0, 'y': .4}))
-		self.time_output = Label(text='', markup=True, size_hint=(.5,None), height=self.size[1]//30, pos_hint={'x':.5,'y':.4})
+		self.entry_layout.add_widget(
+			Label(text='Time Remaining:', size_hint=(.5, None), height=self.size[1] // 30, pos_hint={'x': 0, 'y': .4}))
+		self.time_output = Label(text='', markup=True, size_hint=(.5, None), height=self.size[1] // 30,
+								 pos_hint={'x': .5, 'y': .4})
 		self.entry_layout.add_widget(self.time_output)
 
-		self.entry_layout.add_widget(Label(text='Toaster Temperature:', size_hint=(.5, None), height=self.size[1]//30, pos_hint={'x': 0, 'y': .2}))
-		self.temp_output = Label(text='', markup=True, size_hint=(.5, None), height=self.size[1]//30, pos_hint={'x': .5, 'y': .2})
+		self.entry_layout.add_widget(Label(text='Toaster Temperature:', size_hint=(.5, None), height=self.size[1] // 30,
+										   pos_hint={'x': 0, 'y': .2}))
+		self.temp_output = Label(text='', markup=True, size_hint=(.5, None), height=self.size[1] // 30,
+								 pos_hint={'x': .5, 'y': .2})
 		self.entry_layout.add_widget(self.temp_output)
-
 
 		self.time_input.bind(text=self.on_text_time)
 		self.time_input.bind(on_text_validate=self.on_enter_time)
@@ -80,7 +88,7 @@ class InstructionMenu(Menu):
 		self.temp_input.bind(on_text_validate=self.on_enter_temp)
 
 		''' Containing widget for user navigation '''
-		self.navigation_layout = BoxLayout(orientation='horizontal', spacing=0, size_hint=(1,.1))
+		self.navigation_layout = BoxLayout(orientation='horizontal', spacing=0, size_hint=(1, .1))
 		self.base_layout.add_widget(self.navigation_layout)
 
 		self.back_button = Button(text='<- Back')
@@ -90,10 +98,10 @@ class InstructionMenu(Menu):
 		self.settings_button = Button(text='Settings')
 		self.settings_button.bind(on_press=self.on_settings)
 		self.defaults_button = Button(text='Defaults')
-		self.defaults_button.bind(on_press = self.on_defaults)
-		self.confirm_button = Button(text = 'Confirm')
-		self.confirm_button.bind(on_press = self.on_confirm)
-		self.stop_button = Button(text='Stop\nCooking')
+		self.defaults_button.bind(on_press=self.on_defaults)
+		self.confirm_button = Button(text='Confirm')
+		self.confirm_button.bind(on_press=self.on_confirm)
+		self.stop_button = Button(text='Cancel')
 		self.stop_button.bind(on_press=self.stop_cooking)
 
 		self.navigation_layout.add_widget(self.back_button)
@@ -128,7 +136,6 @@ class InstructionMenu(Menu):
 
 
 	def on_confirm(self, instance):
-		''' Send chosen parameters to microcontroller'''
 		self.temp_input_error.text = ''
 		print(repr(self.time_input.text))
 		print(repr(self.temp_input.text))
@@ -141,30 +148,93 @@ class InstructionMenu(Menu):
 		code = 'Confirm' + ' '
 		placeholder = '0'
 		confirm_info = code + placeholder
-		connected = self.send(s, confirm_info)
-		if connected == 0:
-			event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
-		else:
-			self.temp_input_error.text = 'Couldn\'t connect to device'
+		Menu.send(self, s, confirm_info)
+		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
+		''' Send chosen parameters to microcontroller'''
 
-	def recv_clock(self, c, event):
+
+	def motor_wait(self, c, event):
 		''' Receive data from pi (such as remaining time or current temperature '''
-		data = self.recv(c)
-		if data:
-			self.update_time_left(data, event)
+		data = 0
+		try:
+			data = c.recv(12345).decode()
+			split = data.split(' ', 1)
+			print("split:", split)
+			if split[0] == 'Food':
+				event.cancel()
+				event2 = Clock.schedule_interval(lambda dt: self.recv_clock(s, event2), 1)
+			elif split[0] == 'Raised':
+				event.cancel()
+				self.time_output.text = "Done!"
+			else:
+				self.update_labels(data, event)
 
-	def update_time_left(self, data, event):
-		cancel_data = data.split(' ', 1)
-		if data == 'Done!' or data == 'Cooking Cancelled' or data == 'Stop':
+
+		except socket.error:
+			print("An error has occurred... couldn't send data")
+
+	def recv_clock(self, c, event2):
+		''' Receive data from pi (such as remaining time or current temperature '''
+		data = 0
+		try:
+			data = c.recv(12345).decode()
+			self.update_event(data, event2)
+		except socket.error:
+			print("An error has occurred... couldn't send data")
+
+	def update_event(self, data, event2):
+
+		cancel_data = data.split(' ', 3)
+		print("Cancel Data 1: ", cancel_data)
+		if cancel_data[2] == 'Temp':
+			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
+			self.temp_output.text = cancel_data[1]
+		elif data == 'Lowering food...   ':
 			self.time_output.text = data
+			self.temp_output.text = 'N/A'
+		elif cancel_data[3] == ' Cooking Cancelled   ' or cancel_data[3] == 'Cooking Cancelled   ' or cancel_data[1] == 'Cancelled':
+			self.time_output.text = "Cooking Cancelled"
+			event2.cancel()
+			event3 = Clock.schedule_interval(lambda dt: self.motor_wait(s, event3), 1)
+		elif cancel_data[0] == 'Done!':
+			event2.cancel()
+			event3 = Clock.schedule_interval(lambda dt: self.motor_wait(s, event3), 1)
+		elif cancel_data[3] == 'Code':
+			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
+			self.temp_output.text = cancel_data[2]
+		else:
+			self.time_output.text = Menu.to_minsec(self, cancel_data[2])
+
+	def update_labels(self, data, event):
+
+		cancel_data = data.split(' ', 6)
+		print("Cancel Data 2: ", cancel_data)
+		if cancel_data[3] == 'Temp' or cancel_data[0] == 'Food':
+			self.time_output.text = Menu.to_minsec(self, cancel_data[2])
+			self.temp_output.text = cancel_data[3]
+		elif data == 'Lowering food...   ':
+			self.time_output.text = data
+			self.temp_output.text = 'N/A'
+		elif cancel_data[0] == 'Raising':
+			self.time_output.text = data
+			self.temp_output.text = 'N/A'
+		elif cancel_data[3] == ' Cooking Cancelled   ':
+			self.time_output.text = "Cooking Cancelled"
 			event.cancel()
-		elif cancel_data[1] == 'Cooking Cancelled' or cancel_data[1] == ' Cooking Cancelled':
+		elif cancel_data[0] == 'Done!' or cancel_data[0] == 'Stop' or cancel_data[0] == 'Lowering':
+			self.time_output.text = cancel_data[0]
+			event.cancel()
+		elif cancel_data[1] == 'Cancelled':
 			self.time_output.text = cancel_data[1]
 			event.cancel()
+		elif cancel_data[3] == 'Code':
+			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
+			self.temp_output.text = cancel_data[2]
 		else:
-			self.time_output.text = self.to_minsec(data)
+			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
 
 	''' Text Field Callbacks '''
+
 	def cursor_update_insert(self, instance, old_cursor, capped, dt):
 		''' Move cursor position when colon added to input '''
 		old = old_cursor[0]
@@ -173,9 +243,9 @@ class InstructionMenu(Menu):
 		text = instance.text
 
 		if len(text) == 2 and old == 3 and new == 2:
-			instance.cursor = new-1, 0
+			instance.cursor = new - 1, 0
 		elif len(text) == 4 and old == 2 and new == 3:
-			instance.cursor = new+1, 0
+			instance.cursor = new + 1, 0
 		elif len(text) == 5:
 			instance.cursor = old if capped else new, 0
 
@@ -198,7 +268,7 @@ class InstructionMenu(Menu):
 		code = 'Time' + ' '
 		c_time = str(self.cook_time)
 		time_info = code + c_time
-		self.send(s, time_info)
+		Menu.send(self, s, time_info)
 
 	def on_text_temp(self, instance, text):
 		instance.text = self.just_digits(text, False)[-3:]
@@ -208,7 +278,7 @@ class InstructionMenu(Menu):
 		code = 'Temp' + ' '
 		c_temp = str(self.cook_temp)
 		temp_info = code + c_temp
-		self.send(s, temp_info)
+		Menu.send(self, s, temp_info)
 
 	def stop_cooking(self, instance):
-		self.send(s, 'Stop')
+		Menu.send(self, s, 'Stop')
