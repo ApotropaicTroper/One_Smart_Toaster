@@ -164,6 +164,7 @@ class DefaultsMenu(Menu):
 		''' User is editing presets '''
 		check_text = text.split('\n')
 		cursor_col, cursor_line = instance.cursor
+		check_text[0] = ''.join(check_text[0].split(self.delimeter))
 		if len(check_text) > 1:
 			if not self.time_capped:
 				self.time_capped = len(check_text[1]) > 5
