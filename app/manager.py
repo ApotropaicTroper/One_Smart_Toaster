@@ -1,5 +1,5 @@
 import kivy
-from kivy.utils import escape_markup
+from kivy.utils import escape_markup, platform
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.uix.label import Label
 from kivy.clock import Clock
@@ -16,7 +16,7 @@ class Menu(Screen):
 
 	# static variable; all Menu objects access the same ScreenManager
 	_sm = ScreenManager()
-	size = (800,600)
+	size = Window.size if platform == 'android' else (800,600) 
 
 	# static, read-only variable
 	@property
