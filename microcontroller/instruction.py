@@ -1,4 +1,5 @@
 import threading as thread
+import os
 
 
 class CookInstructions(object):
@@ -18,6 +19,17 @@ class CookInstructions(object):
         # initial state equals not set, as expected
         self.stopped = thread.Event()
         self.confirmed = thread.Event()
+        
+        
+        if os.stat("default.txt").st_size == 0:
+            self.cook_time = cook_time
+            self.cook_temp = cook_temp
+        else:
+            with open("default.txt") as f:
+                content = f.readlines()
+                content = [x.strip() for x in content]
+                self.cook_time = int(content[0])
+                self.cook_temp = int(content[1])
 
     @property
     def cook_time(self):
@@ -64,8 +76,12 @@ class CookInstructions(object):
 
     def clear(self):
         ''' Reset all provided settings, and clear all flags '''
-        self.cook_time = 0
-        self.cook_temp = 0
+        if self.default_time != 0 and self.default_temp != 0:
+            self.cook_time = default_time
+            self.cook_temp = default_temp
+        else:
+            self.cook_temp = 0
+            self.cook_temp = 0
         self.confirmed.clear()
         self.stopped.clear()
         
@@ -76,4 +92,4 @@ class CookInstructions(object):
         default_time = time
         default_temp = temp
         self.cook_time = default_time
-        self.cook_temp = default_temp
+        self.cook_temp = default_temp        
