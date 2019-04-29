@@ -6,6 +6,8 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
+import threading
+import threading as thread
 
 from functools import partial
 
@@ -149,29 +151,11 @@ class InstructionMenu(Menu):
 		placeholder = '0'
 		confirm_info = code + placeholder
 		Menu.send(self, s, confirm_info)
-		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
+		self.start_cook()
 		''' Send chosen parameters to microcontroller'''
 
-
-	def motor_wait(self, c, event):
-		''' Receive data from pi (such as remaining time or current temperature '''
-		data = 0
-		try:
-			data = c.recv(12345).decode()
-			split = data.split(' ', 1)
-			print("split:", split)
-			if split[0] == 'Food':
-				event.cancel()
-				event2 = Clock.schedule_interval(lambda dt: self.recv_clock(s, event2), 1)
-			elif split[0] == 'Raised':
-				event.cancel()
-				self.time_output.text = "Done!"
-			else:
-				self.update_labels(data, event)
-
-
-		except socket.error:
-			print("An error has occurred... couldn't send data")
+	def start_cook(self):
+		event = Clock.schedule_interval(lambda dt: self.recv_clock(s, event), 1)
 
 	def recv_clock(self, c, event2):
 		''' Receive data from pi (such as remaining time or current temperature '''
@@ -184,54 +168,17 @@ class InstructionMenu(Menu):
 
 	def update_event(self, data, event2):
 
-		cancel_data = data.split(' ', 3)
-		print("Cancel Data 1: ", cancel_data)
-		if cancel_data[2] == 'Temp':
+		cancel_data = data.split(' ', 6)
+		if data == 'Raised':
+			self.time_output.text = 'Done!'
+			self.temp_output.text = ' '
+			event2.cancel()
+		elif data == 'Lowering food...' or data == 'Raising food...':
+			self.time_output.text = data
+			self.temp_output.text = ' '
+		elif cancel_data[2] == 'Code':
 			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
 			self.temp_output.text = cancel_data[1]
-		elif data == 'Lowering food...   ':
-			self.time_output.text = data
-			self.temp_output.text = 'N/A'
-		elif cancel_data[3] == ' Cooking Cancelled   ' or cancel_data[3] == 'Cooking Cancelled   ' or cancel_data[1] == 'Cancelled':
-			self.time_output.text = "Cooking Cancelled"
-			event2.cancel()
-			event3 = Clock.schedule_interval(lambda dt: self.motor_wait(s, event3), 1)
-		elif cancel_data[0] == 'Done!':
-			event2.cancel()
-			event3 = Clock.schedule_interval(lambda dt: self.motor_wait(s, event3), 1)
-		elif cancel_data[3] == 'Code':
-			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
-			self.temp_output.text = cancel_data[2]
-		else:
-			self.time_output.text = Menu.to_minsec(self, cancel_data[2])
-
-	def update_labels(self, data, event):
-
-		cancel_data = data.split(' ', 6)
-		print("Cancel Data 2: ", cancel_data)
-		if cancel_data[3] == 'Temp' or cancel_data[0] == 'Food':
-			self.time_output.text = Menu.to_minsec(self, cancel_data[2])
-			self.temp_output.text = cancel_data[3]
-		elif data == 'Lowering food...   ':
-			self.time_output.text = data
-			self.temp_output.text = 'N/A'
-		elif cancel_data[0] == 'Raising':
-			self.time_output.text = data
-			self.temp_output.text = 'N/A'
-		elif cancel_data[3] == ' Cooking Cancelled   ':
-			self.time_output.text = "Cooking Cancelled"
-			event.cancel()
-		elif cancel_data[0] == 'Done!' or cancel_data[0] == 'Stop' or cancel_data[0] == 'Lowering':
-			self.time_output.text = cancel_data[0]
-			event.cancel()
-		elif cancel_data[1] == 'Cancelled':
-			self.time_output.text = cancel_data[1]
-			event.cancel()
-		elif cancel_data[3] == 'Code':
-			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
-			self.temp_output.text = cancel_data[2]
-		else:
-			self.time_output.text = Menu.to_minsec(self, cancel_data[0])
 
 	''' Text Field Callbacks '''
 
